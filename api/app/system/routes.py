@@ -11,15 +11,16 @@ from traceback import print_exc
 
 import aiohttp
 import asyncio
-import uvloop
 from fastapi import APIRouter
 from pydantic import BaseModel
 from utils import responses as resp
 from utils.responses import response_with
+import platform
 
-
-# 使用 uvloop 作为事件循环
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if platform.system() != 'Windows':
+    import uvloop
+    # 使用 uvloop 作为事件循环
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 router = APIRouter()
 
 
