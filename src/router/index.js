@@ -114,11 +114,24 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/dashboard'),
         name: 'dashboard',
-        meta: {title: 'Dashboard', icon: 'dashboard', affix: true}
+        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/code_editor',
+    component: Layout,
+    redirect: '/code_editor',
+    name: 'CodeEditor',
+    children: [
+      {
+        path: 'code_editor',
+        component: () => import('@/views/code_editor/code_editor'),
+        name: 'CodeEditor',
+        meta: { title: 'CodeEditor', icon: 'GalaEditor' }
       }
     ]
   }
-
 ]
 
 /**
