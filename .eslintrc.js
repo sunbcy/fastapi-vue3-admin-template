@@ -24,6 +24,7 @@ module.exports = {
      */
 
     // 需要使用 === 和 !==
+    'no-unused-vars': 'off', // 关闭未使用变量检查
     eqeqeq: 2,
     // 要求组件名称始终为多字
     'vue/multi-word-component-names': 0,

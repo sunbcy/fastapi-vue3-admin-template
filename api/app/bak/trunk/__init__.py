@@ -20,6 +20,9 @@ def register_routers(app):  # 只有在此处注册的应用才可以自动生�
     from app.system import routes as system_routes
     app.include_router(system_routes.router, prefix='/api/system', tags=['system'])
 
+    from app.code_editor import routes as code_editor_routes
+    app.include_router(code_editor_routes.router, prefix='/api/code_editor', tags=['code_editor'])
+
     # from app.azquotes import routes as azquotes_routes
     # app.include_router(azquotes_routes.router, prefix='/api/azquotes', tags=['azquotes'])
     #

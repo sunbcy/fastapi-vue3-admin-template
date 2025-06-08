@@ -122,7 +122,6 @@ export const constantRoutes = [
     path: '/code_editor',
     component: Layout,
     redirect: '/code_editor',
-    name: 'CodeEditor',
     children: [
       {
         path: 'code_editor',

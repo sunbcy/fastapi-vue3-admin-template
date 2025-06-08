@@ -1,0 +1,120 @@
+<template>
+  <div>
+    <h3>Code Editor</h3>
+    <div style="width: 500px">
+      <el-input v-model="filename" placeholder="input filename"></el-input>
+      <el-button type="primary" @click="save_file">Save</el-button>
+    </div>
+    <div class="editor-container">
+<!--      <wl-explorer-->
+<!--        :all-path="['/documents', '/images']"-->
+<!--        :data="fileList"-->
+<!--        @upload="handleUpload"-->
+<!--        @delete="handleDelete"-->
+<!--      />-->
+      <Codemirror
+        ref="cmEditor"
+        v-model="code"
+        :options="cmOptions"
+        border
+        height="600px"
+      ></Codemirror>
+    </div>
+  </div>
+</template>
+
+<script>
+import Codemirror from 'codemirror-editor-vue3'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/3024-day.css'
+import 'codemirror/theme/ayu-mirage.css'
+import 'codemirror/theme/monokai.css'
+import 'codemirror/theme/rubyblue.css'
+// import wlExplorer from 'wl-explorer'
+// import 'wl-explorer/lib/wl-explorer.css'
+
+//html code highlight
+import 'codemirror/mode/htmlmixed/htmlmixed'
+import 'codemirror/mode/javascript/javascript'
+import 'codemirror/mode/python/python'
+import { save_code } from '@/api/code_editor'
+
+export default {
+  name: 'CodeEditor',
+  components: {
+    Codemirror
+    // wlExplorer
+  },
+  data() {
+    return {
+      filename: 'test.py',
+      code: 'console.log("Hello, World!");\nconsole.log("Test Line 2!");',
+      cmOptions: {
+        mode: 'python',
+        theme: 'default',
+        lineNumbers: true,
+        lineWrapping: true, // 允许换行
+        line: true,
+        viewportMargin: Infinity
+      }
+      // fileList: [
+      //   { id: 1, name: 'report.pdf', type: 'file', path: '/documents' }
+      // ]
+    }
+  },
+  mounted() {
+    this.editor = this.$refs.cmEditor.Codemirror
+    // 设置codemirror高度为600
+    // this.editor.setSize('auto', 600)
+    let that = this
+    that.clientHeight = `${document.documentElement.clientHeight}` //获取浏览器可视区域高度
+    // // 获取codemirror对象
+    that.editor = this.$refs.cmEditor.Codemirror
+    // // 设置codemirror高度
+    // that.editor.setSize('auto', this.clientHeight - 205)
+
+    // // 监听屏幕
+    // window.onresize = function () {
+    //   that.clientHeight = `${document.documentElement.clientHeight}`
+    //   // 设置代码区域高度
+    //   that.editor.setSize('auto', parseFloat(that.clientHeight) - 205)
+    // }
+  },
+  methods: {
+    save_file() {
+      const reqData = {
+        filename: this.filename,
+        code: this.code
+      }
+      save_code(reqData)
+        .then((res) => {
+          console.log(res)
+          if (res.code === 20000) {
+            this.$message.success(`${this.filename} 保存成功!`)
+            console.log(`${this.filename} 存于 ${res.saved_path}`)
+          } else {
+            this.$message.error(`${this.filename} 保存失败`)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message.error('服务端异常, 保存失败...')
+        })
+    }
+    // // eslint-disable-next-line no-unused-vars
+    // handleUpload(file) {
+    //   // 调用后端 API 上传
+    //   // axios.post('/api/upload', file);
+    // },
+    // // eslint-disable-next-line no-unused-vars
+    // handleDelete(fileId) {
+    //   // 删除文件逻辑
+    // }
+  }
+}
+</script>
+<style scoped>
+.editor-container {
+  height: 600px; /* 占满整个视口 */
+}
+</style>
