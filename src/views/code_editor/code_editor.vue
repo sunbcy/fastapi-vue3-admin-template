@@ -1,9 +1,10 @@
+<!--suppress JSAnnotator -->
 <template>
   <div>
     <h3>Code Editor</h3>
     <div style="width: 500px">
       <el-input v-model="filename" placeholder="input filename"></el-input>
-      <el-button type="primary" @click="save_file">Save</el-button>
+      <el-button type="primary" @click="saveFile">Save</el-button>
     </div>
     <div class="editor-container">
       <Codemirror
@@ -17,7 +18,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus' // 修复1：引入消息组件
 import Codemirror from 'codemirror-editor-vue3'
 import 'codemirror/lib/codemirror.css'
@@ -31,62 +33,99 @@ import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/python/python'
 import { save_code } from '@/api/code_editor'
 
-export default {
-  name: 'CodeEditor',
-  components: {
-    Codemirror
-  },
-  data() {
-    return {
-      filename: 'test.py',
-      code: 'console.log("Hello, World!");\nconsole.log("Test Line 2!");',
-      cmOptions: {
-        mode: 'python',
-        theme: 'default',
-        lineNumbers: true,
-        lineWrapping: true,
-        viewportMargin: Infinity
-      },
-      clientHeight: 0, // 修复3：声明响应式高度
-      editor: null // 修复3：声明编辑器引用
-    }
-  },
-  mounted() {
-    this.clientHeight = `${document.documentElement.clientHeight}`
-    this.editor = this.$refs.cmEditor.editor // 修复4：正确访问编辑器实例
-    // this.editor.setSize('auto', this.clientHeight - 205)
+const filename = ref('test.py')
+const code = ref('console.log("Hello, World!");\nconsole.log("Test Line 2!");')
+const cmEditor = ref(null) // 编辑器实例引用
+const clientHeight = ref(window.innerHeight)
 
-    window.addEventListener('resize', this.handleResize) // 修复2：添加事件监听
-  },
-  beforeUnmount() {
-    // 修复2：生命周期钩子更名
-    window.removeEventListener('resize', this.handleResize)
-  },
-  methods: {
-    handleResize() {
-      // 修复2：提取为独立方法
-      this.clientHeight = `${document.documentElement.clientHeight}`
-      // this.editor.setSize('auto', parseFloat(this.clientHeight) - 205)
-    },
-    save_file() {
-      const reqData = {
-        filename: this.filename,
-        code: this.code
-      }
-      save_code(reqData)
-        .then((res) => {
-          if (res.code === 20000) {
-            ElMessage.success(`${this.filename} 保存成功!`) // 修复1：使用新消息API
-          } else {
-            ElMessage.error(`${this.filename} 保存失败`)
-          }
-        })
-        .catch(() => {
-          ElMessage.error('服务端异常, 保存失败...')
-        })
-    }
+// 编辑器配置
+const cmOptions = ref({
+  mode: 'python',
+  theme: 'default',
+  lineNumbers: true,
+  lineWrapping: true,
+  viewportMargin: Infinity
+})
+
+// 初始化编辑器
+onMounted(() => {
+  if (cmEditor.value) {
+    const editor = cmEditor.value.editor
+    // editor.setSize('auto', clientHeight.value - 205)
+    window.addEventListener('resize', handleResize)
+  }
+})
+
+// 清理资源
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+// 响应窗口大小变化
+const handleResize = () => {
+  clientHeight.value = window.innerHeight
+  if (cmEditor.value?.editor) {
+    // cmEditor.value.editor.setSize('auto', clientHeight.value - 205)
   }
 }
+
+// 保存文件逻辑
+async function saveFile() {
+  const reqData = {
+    filename: filename.value,
+    code: code.value
+  }
+  try {
+    const res = await save_code(reqData) // 序列化为 JSON 字符串 JSON.stringify(
+    // const res = JSON.parse(jsonString)
+    console.log(res)
+
+    if (res.code === 20000) {
+      ElMessage.success(`${filename.value} 保存成功！`)
+    } else {
+      ElMessage.error(`${filename.value} 保存失败（错误码：${res.code}）`)
+    }
+  } catch (error) {
+    console.error('API请求异常：', error)
+    ElMessage.error('服务端异常，保存失败')
+  }
+}
+
+// export default {
+//   name: 'CodeEditor',
+//   components: {
+//     Codemirror
+//   },
+//
+//   methods: {
+//     // handleResize() {
+//     //   // 修复2：提取为独立方法
+//     //   this.clientHeight = `${document.documentElement.clientHeight}`
+//     //   // this.editor.setSize('auto', parseFloat(this.clientHeight) - 205)
+//     // },
+//     const saveFile = async () =>{
+//       const reqData = {
+//         filename: filename.value,
+//         code: code.value
+//       }
+//
+//       try {
+//         const res = await save_code(reqData) // 改用async/await语法
+//         console.log('响应数据:', res)
+//
+//         if (res.code === 20000) {
+//           ElMessage.success(`${filename.value} 保存成功!`) // 直接使用变量名
+//         } else {
+//           ElMessage.error(`${filename.value} 保存失败，错误码: ${res.code}`)
+//         }
+//       } catch (error) {
+//         console.error('请求异常:', error)
+//         ElMessage.error('服务端异常，保存失败...')
+//       }
+//
+//     }
+//   }
+// }
 </script>
 
 <style scoped>

@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from utils import responses as resp
 from utils.responses import response_with
 import platform
+import json
 
 if platform.system() != 'Windows':
     import uvloop
@@ -41,8 +42,6 @@ class CodeSaveRequest(BaseModel):
 
 @router.post('/save_code')  # 异步版本
 async def save_code(request: CodeSaveRequest):  # 目前只能获取当天的数据
-    # data = request.json
-    # filename = data['filename']
     print('ok saved')
     code = request.code
     # 创建存储目录 (确保目录存在)
