@@ -20,4 +20,4 @@ async def index():
 # 启动应用
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5055)
+    uvicorn.run(app, host="0.0.0.0", port=5055)  # test
