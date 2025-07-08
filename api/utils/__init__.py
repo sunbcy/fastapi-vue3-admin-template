@@ -30,7 +30,9 @@ def get_os_type():  # 获取机器的架构类型
     if sys.platform.startswith("win") or system == "Windows":
         # print("当前系统是 Windows")
         return 'Windows'
-    elif (sys.platform.startswith("linux") or system == "Linux") and platform.system().lower() == 'linux' and platform.machine() == 'aarch64':
+    elif ((sys.platform.startswith("linux") or system == "Linux") and
+          platform.system().lower() == 'linux' and
+          platform.machine() == 'aarch64'):
         # print("当前系统是 Android")
         return 'Android'
     elif sys.platform.startswith("linux") or system == "Linux":
