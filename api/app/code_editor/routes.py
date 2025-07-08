@@ -1,16 +1,11 @@
-# from app.code_editor import code_editor_bp
-# from app.utils import responses as resp
-# from app.utils.responses import response_with
-# from flask import request
-import os
-
 import asyncio
+import os
+import platform
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from utils import responses as resp
 from utils.responses import response_with
-import platform
-import json
 
 if platform.system() != 'Windows':
     import uvloop

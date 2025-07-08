@@ -7,15 +7,13 @@
 # @E-mail: saintbcy@163.com
 # @Time: 11月 02, 2024 21:56
 # ---
-from traceback import print_exc
-
-import aiohttp
 import asyncio
+import platform
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from utils import responses as resp
 from utils.responses import response_with
-import platform
 
 if platform.system() != 'Windows':
     import uvloop

@@ -1,13 +1,14 @@
-import warnings
 import os
+import subprocess
+import warnings
+import webbrowser
+
+import yaml
+# from app.azquotes.routes import client
+from fastapi.responses import FileResponse
 
 from app import create_app
 from utils import get_os_type
-import yaml
-import subprocess
-import webbrowser
-# from app.azquotes.routes import client
-from fastapi.responses import FileResponse
 
 warnings.simplefilter("ignore")
 app = create_app()
