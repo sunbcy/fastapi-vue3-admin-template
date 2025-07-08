@@ -22,11 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-*.pyc
 
 # api
 venv_mac*
 /api/CodeRepo/
-__pycache__/*
 vite.config.js
 config.yaml
+# Python 字节码缓存文件
+__pycache__/
+*.pyc
+__pycache__/*.pyc
