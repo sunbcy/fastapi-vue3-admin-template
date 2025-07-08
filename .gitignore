@@ -22,7 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.pyc
 
 # api
-venv*
+venv_mac*
 /api/CodeRepo/
+__pycache__/*
+vite.config.js
+config.yaml
