@@ -8,12 +8,14 @@
 # @Time: 11月 05, 2024 17:45
 # ---
 import os
-import shutil
-from api.utils import get_os_type
-from api.utils import get_local_ip
-import subprocess
-import yaml
 import re
+import shutil
+import subprocess
+
+import yaml
+
+from api.utils import get_local_ip
+from api.utils import get_os_type
 
 init_config = {
     'MySQL': {
