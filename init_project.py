@@ -164,6 +164,22 @@ def re_config_local_ip():
         print('系统未知，请手动编译项目!')
 
 
+def drop_pre_bak_dirs(venv_name='venv'):
+    BAK_FILE_PATH = os.path.join(os.path.abspath(''), 'bakfile')
+    # 获取本地python版本号
+    py_version = subprocess.Popen(
+        [f'api/{venv_name}/bin/python3', '-V'],
+        stdout=subprocess.PIPE
+    )
+    version_no = '.'.join(str(py_version.stdout.read().split()[-1].decode('utf-8')).split('.')[:-1])
+    print(f'当前python 虚拟环境版本: python{version_no}')
+    py_version_no = f'python{version_no}'
+    DST_PATH = os.path.abspath(f'api/{venv_name}/lib/{py_version_no}/site-packages')
+    shutil.copytree(os.path.join(BAK_FILE_PATH, 'scapy_ssl_tls'), os.path.join(DST_PATH, 'scapy_ssl_tls'))
+    shutil.copytree(os.path.join(BAK_FILE_PATH, 'scapy_ssl_tls-3.0.0-py3.9.egg-info'),
+                    os.path.join(DST_PATH, 'scapy_ssl_tls-3.0.0-py3.9.egg-info'))
+
+
 if __name__ == "__main__":
     os_type = get_os_type()
     print(f"当前系统是 {os_type}")
@@ -205,3 +221,61 @@ if __name__ == "__main__":
         with open("config.yaml", "w") as file:  # 打开文件并写入 YAML 格式的内容
             yaml.dump(init_config, file, default_flow_style=False)
         re_config_local_ip()  # 重新配置IP并打包
+    else:  # 重写IP
+        # 已经存在了config.yaml文件，则先读本地文件config.yaml中的ip跟当前ip判断是否一致,如果不一致再写
+        with open("config.yaml", "r") as file:  # 打开 YAML 文件
+            conf_data = yaml.safe_load(file)  # 加载 YAML 文件内容
+            latest_local_ip = conf_data.get('server').get('host')
+
+        conf_data['server']['run_mode'] = 0  # 通过本地模式启动的为模式0,通过发布模式启动的为1
+
+        if current_local_ip != latest_local_ip:  # 需要在本地执行重新打包命令
+            conf_data['server']['host'] = current_local_ip
+            # re_config_local_ip()  # 重新配置IP并打包
+        else:  # 同局域网下前后获取IP不变，重新判断 需不需要重新打包。--此处是之前的判断逻辑,现在
+            pass
+        with open("config.yaml", "w") as file:  # 打开文件并写入 YAML 格式的内容
+            yaml.dump(conf_data, file, default_flow_style=False)
+        # with open('.env.production', 'r', encoding='utf-8') as prod_env:
+        #     prod_env_cnt = prod_env.read()
+        # if current_local_ip not in prod_env_cnt:
+        #     re_config_local_ip()  # 重新配置IP并打包
+        # else:
+        #     pass
+
+        re_config_local_ip()
+
+    print('--项目初始化完成--')
+
+    print("即将进行 python虚拟环境初始化 , 请自行确认本地有>=python3.6以上的环境!")
+    if os_type == 'Android':  # python虚拟环境初始化
+        venv_nm = 'venv_termux'
+        if venv_nm not in os.listdir(os.path.abspath('api')):
+            subprocess.run(['python3', '-m', 'venv', f'api/{venv_nm}'],
+                           capture_output=False,
+                           text=True)
+            # subprocess.run(['source', 'api/venv_termux/bin/activate'],
+            #                capture_output=False, text=True)
+            subprocess.run([f'api/{venv_nm}/bin/pip3', 'install', '-r', 'api/requirements_termux.txt'],
+                           capture_output=False,
+                           text=True)
+    elif os_type == 'Windows':
+        venv_nm = 'venv_win'
+        if venv_nm not in os.listdir(os.path.abspath('api')):
+            subprocess.run(['python3', '-m', 'venv', f'api/{venv_nm}'],
+                           capture_output=False,
+                           text=True)
+            subprocess.run([f'api/{venv_nm}/Scripts/pip3.exe', 'install', '-r', 'api/requirements_win.txt'],
+                           capture_output=False,
+                           text=True)
+    else:
+        venv_nm = 'venv_mac'
+        if venv_nm not in os.listdir(os.path.abspath('api')):
+            subprocess.run(['python3', '-m', 'venv', f'api/{venv_nm}'],
+                           capture_output=False,
+                           text=True)
+            # 此处先将scapy-ssl-tls==3.0.0放到指定位置.
+            drop_pre_bak_dirs(venv_name=venv_nm)
+            subprocess.run([f'api/{venv_nm}/bin/pip3', 'install', '-r', 'api/requirements_mac.txt'],
+                           capture_output=False,
+                           text=True)  # 本地安装已经配置好的requirements.txt,因此要在初始化安装前确认这个配置文件是有效的,待优化
