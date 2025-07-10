@@ -4,9 +4,9 @@ import { useUserStore } from '@/store/user'
 
 // 业务请求
 const request = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_API // url = base url + request url
+  baseURL: import.meta.env.VITE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  // timeout: 5000 // request timeout
+  timeout: 5000 // request timeout
 })
 
 // request interceptor

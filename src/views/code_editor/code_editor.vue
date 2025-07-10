@@ -78,13 +78,13 @@ async function saveFile() {
   try {
     const res = await save_code(reqData) // 序列化为 JSON 字符串 JSON.stringify(
     // const res = JSON.parse(jsonString)
-    console.log(res)
-
-    if (res.code === 20000) {
-      ElMessage.success(`${filename.value} 保存成功！`)
-    } else {
-      ElMessage.error(`${filename.value} 保存失败（错误码：${res.code}）`)
-    }
+    console.log(res.code)
+    //
+    // if (res.code === 20000) {
+    //   ElMessage.success(`${filename.value} 保存成功！`)
+    // } else {
+    //   ElMessage.error(`${filename.value} 保存失败（错误码：${res.code}）`)
+    // }
   } catch (error) {
     console.error('API请求异常：', error)
     ElMessage.error('服务端异常，保存失败')
