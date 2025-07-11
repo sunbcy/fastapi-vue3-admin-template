@@ -19,7 +19,7 @@ export default (mode) => {
       open: true,
       proxy: {
         '/api': {
-          target: 'https://192.168.18.211:5055/', // 开发环境
+          target: 'https://192.168.31.127:5055/', // 开发环境
           // target: 'https://localhost:9527', // 开发环境
           // target: 'https://xxxx', // 测试环境
           // target: 'https://xxxx', // 预发环境

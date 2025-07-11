@@ -1,7 +1,7 @@
 import asyncio
 import os
 import platform
-import aiofiles
+# import aiofiles
 
 from fastapi import APIRouter
 from pydantic import BaseModel

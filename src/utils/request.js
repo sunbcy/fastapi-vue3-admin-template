@@ -44,6 +44,9 @@ request.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   (response) => {
+    // eslint-disable-next-line no-debugger
+    // debugger
+    console.log(response)
     const { code, data, msg } = response.data
     // if the custom code is not 20000, it is judged as an error.
     if (code !== 20000) {
@@ -74,7 +77,7 @@ request.interceptors.response.use(
         return Promise.reject(new Error(msg || 'Error'))
       }
     } else {
-      return data
+      return response.data
     }
   },
   (error) => {
