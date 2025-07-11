@@ -1,7 +1,7 @@
 import asyncio
 import os
 import platform
-# import aiofiles
+import aiofiles
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -37,7 +37,7 @@ class CodeSaveRequest(BaseModel):
 
 
 @router.post('/save_code')  # 异步版本
-def save_code(request: CodeSaveRequest):  # 目前只能获取当天的数据
+async def save_code(request: CodeSaveRequest):  # 目前只能获取当天的数据
     print('ok saved')
     code = request.code
     # 创建存储目录 (确保目录存在)
@@ -45,16 +45,18 @@ def save_code(request: CodeSaveRequest):  # 目前只能获取当天的数据
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, request.filename)
     try:
-        with open(save_path, 'w', encoding='utf-8') as f:  # , 'CodeRepo', filename)
-            f.write(code)
+        # with open(save_path, 'w', encoding='utf-8') as f:  # , 'CodeRepo', filename)
+        #     f.write(code)
         # 使用异步文件写入
-        # async with aiofiles.open(save_path, 'w', encoding='utf-8') as f:
-        #     await f.write(code)
+        async with aiofiles.open(save_path, 'w', encoding='utf-8') as f:
+            await f.write(code)
         # value = {'code': 20000, 'saved_path': save_path}  # success -> 20000 ?
         value = {'saved_path': save_path}
         print('成功写入code')
-        print(response_with(resp.SUCCESS_200, value=value).body.decode("utf-8"))
+        # print(response_with(resp.SUCCESS_200, value=value).body.decode("utf-8"))
+        return response_with(resp.SUCCESS_200, value=value)
     except Exception as e:
-        value = {'code': 'fail', 'saved_path': save_path}
+        value = {'saved_path': save_path}  # 'code': 'fail',
         print('写入失败')
-    return response_with(resp.SUCCESS_200, value=value)
+        return response_with(resp.BAD_REQUEST_400, value=value)
+

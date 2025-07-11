@@ -70,16 +70,15 @@ const handleResize = () => {
 }
 
 // 保存文件逻辑
-async function saveFile() {
+const saveFile = async () => {
   const reqData = {
     filename: filename.value,
     code: code.value
   }
   try {
-    console.log(111)
     const res = await save_code(reqData) // 序列化为 JSON 字符串 JSON.stringify(
     // const res = JSON.parse(jsonString)
-    console.log(res.code)
+    console.log(res)
     //
     if (res.code === 20000) {
       ElMessage.success(`${filename.value} 保存成功！`)
@@ -87,8 +86,8 @@ async function saveFile() {
       ElMessage.error(`${filename.value} 保存失败（错误码：${res.code}）`)
     }
   } catch (error) {
-    // console.error('API请求异常：', error)
-    // ElMessage.error('服务端异常，保存失败')
+    console.error('API请求异常：', error)
+    ElMessage.error('服务端异常，保存失败')
   }
 }
 
