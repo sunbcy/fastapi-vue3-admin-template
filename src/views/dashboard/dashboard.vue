@@ -149,14 +149,16 @@ const getSystemInfo = async () => {
 const getQuote = async () => {
   try {
     const res = await getTodayQuote() // 序列化为 JSON 字符串 JSON.stringify(
-    todayQuote.value = res.searchResults.text
+    todayQuote.value = res.searchResults
   } catch (error) {
     console.error('API请求异常：', error)
     ElMessage.error('服务端异常，获取quote 失败')
   }
 }
 
-const formattedQuote = computed(() => todayQuote.value.replace(/\n/g, '<br>'))
+const formattedQuote = computed(() =>
+  todayQuote.value.replace(/\r?\n/g, '<br>')
+)
 const formattedInfo = computed(() => diskInfo.value.replace(/\n/g, '<br>'))
 const formattedIpInfo = computed(() => IpInfo.value.replace(/\n/g, '<br>'))
 const formattedCPUInfo = computed(() => cpuInfo.value.replace(/\n/g, '    '))
