@@ -23,11 +23,11 @@ def register_routers(app):  # 只有在此处注册的应用才可以自动生�
     from app.code_editor import routes as code_editor_routes
     app.include_router(code_editor_routes.router, prefix='/api/code_editor', tags=['code_editor'])
 
-    # from app.azquotes import routes as azquotes_routes
-    # app.include_router(azquotes_routes.router, prefix='/api/azquotes', tags=['azquotes'])
-    #
-    # from app.system_info import routes as system_info_routes
-    # app.include_router(system_info_routes.router, prefix='/api/system_info', tags=['system_info'])
+    from app.azquotes import routes as azquotes_routes
+    app.include_router(azquotes_routes.router, prefix='/api/azquotes', tags=['azquotes'])
+
+    from app.system_info import routes as system_info_routes
+    app.include_router(system_info_routes.router, prefix='/api/system_info', tags=['system_info'])
     #
     # from app.jiucaigongshe import routes as jiucaigongshe_routes
     # app.include_router(jiucaigongshe_routes.router, prefix='/api/jiucaigongshe', tags=['jiucaigongshe'])
