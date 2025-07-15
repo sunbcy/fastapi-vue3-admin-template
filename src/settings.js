@@ -23,7 +23,7 @@ export default {
   //菜单宽度(展开时)，单位px
   menuWidth: 210,
   // 是否水平折叠收起菜单
-  menuCollapse: false,
+  menuCollapse: true,
   // 背景色
   menuBackgroundColor: '#304156',
   // 文字颜色
