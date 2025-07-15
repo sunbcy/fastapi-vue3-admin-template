@@ -130,6 +130,19 @@ export const constantRoutes = [
         meta: { title: 'CodeEditor', icon: 'GalaEditor' }
       }
     ]
+  },
+  {
+    path: '/big_a_stock',
+    component: Layout,
+    redirect: '/big_a_stock',
+    children: [
+      {
+        path: 'jiucaigongshe',
+        component: () => import('@/views/jiucaigongshe/index'),
+        name: 'Jiucaigongshe',
+        meta: { title: '韭研公社', icon: 'jiucaigongshe' }
+      }
+    ]
   }
 ]
 
