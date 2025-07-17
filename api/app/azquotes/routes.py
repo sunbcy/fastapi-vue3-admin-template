@@ -62,10 +62,16 @@ class AsyncQuotesBot:
 
         # async with aiohttp.ClientSession(connector=self.connector) as session:
         if self.proxy:
-            async with self.session.get(self.quote_main_url, headers=self.quote_main_url_headers,  **kwargs) as response:
+            async with self.session.get(self.quote_main_url,
+                                        headers=self.quote_main_url_headers,
+                                        timeout=aiohttp.ClientTimeout(total=10),
+                                        **kwargs) as response:
                 return await response.text()
         else:
-            async with self.session.get(self.quote_main_url, headers=self.quote_main_url_headers) as response:
+            async with self.session.get(self.quote_main_url,
+                                        headers=self.quote_main_url_headers,
+                                        timeout=aiohttp.ClientTimeout(total=10)
+                                        ) as response:
                 return await response.text()
 
     async def get_today_quote(self):

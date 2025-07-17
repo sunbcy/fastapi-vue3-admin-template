@@ -143,6 +143,19 @@ export const constantRoutes = [
         meta: { title: '韭研公社', icon: 'jiucaigongshe' }
       }
     ]
+  },
+  {
+    path: '/liepin',
+    component: Layout,
+    redirect: '/liepin',
+    children: [
+      {
+        path: 'liepin',
+        component: () => import('@/views/liepin/index'),
+        name: 'Liepin',
+        meta: { title: '猎聘网', icon: 'liepin' }
+      }
+    ]
   }
 ]
 
