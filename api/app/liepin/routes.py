@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 class JobDetail(BaseModel):
-    jobUrl: str
+    # jobUrl: str
     payload: dict
 
 
@@ -315,7 +315,7 @@ async def get_jobs_from_liepinsearch(job_req: JobReq):
 async def getJobDetails(jobDetail: JobDetail):
     """根据job URL 返回 job detail
     """
-    jobUrl = jobDetail.jobUrl  # 前端请求的参数
+    jobUrl = jobDetail.payload.get('jobUrl')  # 前端请求的参数
     liepin_job_res = liepin_searchjob(payload=jobDetail.payload)
     jobDetailResult = await liepin_job_res.get_job_detail_infos(jobUrl)
     try:

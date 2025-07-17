@@ -78,7 +78,7 @@
                 class="card"
                 v-for="result in searchResults"
                 :key="result.id"
-                @click="fetchDetails(result.job_link)"
+                @click="fetchDetails(result)"
               >
                 <div>
                   <h3>
@@ -215,7 +215,7 @@ onMounted(() => {
   getCompNum()
 })
 
-const fetchDetails = async (jobUrl) => {
+const fetchDetails = async (job) => {
   // const req_Data = {
   //   city: selectedRegion.value,
   //   dq: selectedRegion.value,
@@ -224,8 +224,8 @@ const fetchDetails = async (jobUrl) => {
   //   workYearCode: '0'
   // }
   const reqData = {
-    jobUrl: jobUrl.value,
     payload: {
+      jobUrl: job.job_link,
       city: selectedRegion.value,
       dq: selectedRegion.value,
       currentPage: 0,
