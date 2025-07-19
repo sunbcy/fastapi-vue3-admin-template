@@ -570,6 +570,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/trusted-types@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.npmmirror.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
+  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
+
 "@types/web-bluetooth@^0.0.16":
   version "0.0.16"
   resolved "https://registry.npmmirror.com/@types/web-bluetooth/-/web-bluetooth-0.0.16.tgz#1d12873a8e49567371f2a75fe3e7f7edca6662d8"
@@ -985,6 +990,13 @@ binary-extensions@^2.0.0:
   version "2.3.0"
   resolved "https://registry.npmmirror.com/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
+
+blob@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmmirror.com/blob/-/blob-0.1.0.tgz#7e2fb624abe0253b3ce97d52d6fb986e97e54a64"
+  integrity sha512-k+GwK+4Rj+MPNT4qu+y6+kHp+mPmmNd+28zdrIo69QM9UvypK5Vhcw7jnRiY4KaOMAiOdn0NtPQGTb+Ox1Dtng==
+  dependencies:
+    esm "^3.2.25"
 
 bluebird@^3.5.0:
   version "3.7.2"
@@ -1529,6 +1541,13 @@ dompurify@^2.3.3:
   resolved "https://registry.npmmirror.com/dompurify/-/dompurify-2.5.8.tgz#2809d89d7e528dc7a071dea440d7376df676f824"
   integrity sha512-o1vSNgrmYMQObbSSvF/1brBYEQPHhV1+gsmrusO7/GXtp1T9rCS8cXFqVxK/9crT1jA6Ccv+5MTSjBNqr7Sovw==
 
+dompurify@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.npmmirror.com/dompurify/-/dompurify-3.2.6.tgz#ca040a6ad2b88e2a92dc45f38c79f84a714a1cad"
+  integrity sha512-/2GogDQlohXPZe6D6NOgQvXLPSYBqIWMnZ8zzOhn09REE4eyAzb+Hed3jhoM9OkuaJ8P6ZGTTVWQKAi8ieIzfQ==
+  optionalDependencies:
+    "@types/trusted-types" "^2.0.7"
+
 domutils@^1.5.1:
   version "1.7.0"
   resolved "https://registry.npmmirror.com/domutils/-/domutils-1.7.0.tgz#56ea341e834e06e6748af7a1cb25da67ea9f8c2a"
@@ -1850,6 +1869,11 @@ eslint@^8.48.0:
     optionator "^0.9.3"
     strip-ansi "^6.0.1"
     text-table "^0.2.0"
+
+esm@^3.2.25:
+  version "3.2.25"
+  resolved "https://registry.npmmirror.com/esm/-/esm-3.2.25.tgz#342c18c29d56157688ba5ce31f8431fbb795cc10"
+  integrity sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==
 
 espree@^9.3.1, espree@^9.6.0, espree@^9.6.1:
   version "9.6.1"
