@@ -223,10 +223,15 @@ class liepin_searchjob:
         }
         async with aiohttp.ClientSession() as session:
             if check_proxy():  # 如果是安卓情况下,check_proxy()可能检测不到代理端口故此多个判断.
-                async with session.get(job_link, headers=self.headers, proxy=check_proxy()['http']) as response:
+                async with session.get(job_link,
+                                       headers=self.headers,
+                                       proxy=check_proxy()['http']
+                                       ) as response:
                     r_text = await response.text()
             else:
-                async with session.get(job_link, headers=self.headers) as response:
+                async with session.get(job_link,
+                                       headers=self.headers
+                                       ) as response:
                     r_text = await response.text()
         html = etree.HTML(r_text)
         try:

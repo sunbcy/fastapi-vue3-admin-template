@@ -216,13 +216,6 @@ onMounted(() => {
 })
 
 const fetchDetails = async (job) => {
-  // const req_Data = {
-  //   city: selectedRegion.value,
-  //   dq: selectedRegion.value,
-  //   currentPage: 0,
-  //   key: searchJobKeyword.value,
-  //   workYearCode: '0'
-  // }
   const reqData = {
     payload: {
       jobUrl: job.job_link,
