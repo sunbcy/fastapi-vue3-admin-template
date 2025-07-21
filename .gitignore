@@ -26,6 +26,7 @@ dist-ssr
 # api
 venv_mac*
 /api/CodeRepo/
+/api/uploads/
 vite.config.js
 config.yaml
 # Python 字节码缓存文件

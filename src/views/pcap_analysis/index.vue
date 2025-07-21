@@ -71,7 +71,7 @@ import { get_analysis_info } from '@/api/pcap_analysis'
 import Result from './Result.vue'
 
 // 常量配置
-const uploadUrl = import.meta.env.VITE_BASE_API + '/pcap_analysis/upload'
+const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/pcap_analysis/upload'
 
 // 响应式数据
 const fileList = ref([])
@@ -85,7 +85,7 @@ const uploadRef = ref(null)
 // 生命周期钩子
 onMounted(() => {
   // 当组件被加载后，获取分析数据
-  startAnalysis()
+  startAnalysis
 })
 
 // 事件处理函数
@@ -94,17 +94,33 @@ const handleProgress = (event) => {
 }
 
 const handleSuccess = (response) => {
-  ElMessage.success('文件上传成功')
-  uploadPercentage.value = 0
-  isUploading.value = false
+  // 添加文件类型的安全检查
+  const ALLOWED_EXTENSIONS = ['pcap', 'pcapng']
 
-  // 更新文件列表
-  if (response.data?.fileNames) {
-    fileList.value = [
-      ...fileList.value,
-      ...response.data.fileNames.map((name) => ({ name }))
-    ]
+  if (response?.filename) {
+    const extension = response.filename.split('.').pop().toLowerCase()
+
+    if (ALLOWED_EXTENSIONS.includes(extension)) {
+      uploadPercentage.value = 0
+      isUploading.value = false
+      fileList.value = [
+        ...fileList.value,
+        {
+          id: Date.now(), // 添加唯一ID
+          name: response.filename,
+          path: response.path,
+          date: new Date().toISOString(), // 添加时间戳
+          status: 'success'
+        }
+      ]
+      ElMessage.success('文件上传成功')
+      console.log(fileList.value)
+    } else {
+      console.warn(`Invalid file type: ${extension}`)
+    }
   }
+
+  // console.log(response) // {message: 'File uploaded successfully', filename: 'Bilibili-PC-modified-01.pcap', path: '/Users/bcy/Downloads/vue3-admin-template/api/uploads/Bilibili-PC-modified-01.pcap'}
 }
 
 const handleError = (error) => {
@@ -121,11 +137,11 @@ const showResultDialog = (id) => {
 // 核心方法
 const getAnalysisData = async () => {
   try {
-    const sendData = { data: fileList.value.map((file) => file.name) }
+    const sendData = { data: fileList.value } // .filename  .map((file) => file)
     const res = await get_analysis_info(sendData)
-
-    if (res.code === 200) {
-      tableData.value = res.data
+    console.log(res)
+    if (res.code === 20000) {
+      tableData.value = res.tasks
     } else {
       ElMessage.warning(`分析失败: ${res.message || '未知错误'}`)
     }
@@ -138,7 +154,7 @@ const getAnalysisData = async () => {
 const startAnalysis = () => {
   if (fileList.value.length > 0) {
     ElMessage.success('开始分析数据包...')
-    isUploading.value = true
+    // isUploading.value = true
     getAnalysisData()
   } else {
     ElMessage.warning('请先上传数据包')

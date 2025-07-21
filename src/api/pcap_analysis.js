@@ -8,3 +8,11 @@ export async function get_analysis_info(data) {
     data
   })
 }
+
+export async function upload_pcaps(data) {
+  return await request({
+    url: '/pcap_analysis/upload',
+    method: 'post',
+    data
+  })
+}
