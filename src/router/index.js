@@ -156,6 +156,19 @@ export const constantRoutes = [
         meta: { title: '猎聘网', icon: 'liepin' }
       }
     ]
+  },
+  {
+    path: '/pcap_analysis',
+    component: Layout,
+    redirect: '/pcap_analysis',
+    children: [
+      {
+        path: 'pcap_analysis',
+        component: () => import('@/views/pcap_analysis/index'),
+        name: 'PcapAnalysis',
+        meta: { title: '数据包分析', icon: 'network' }
+      }
+    ]
   }
 ]
 
