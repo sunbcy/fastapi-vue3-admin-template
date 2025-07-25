@@ -10,7 +10,6 @@ import { reactive, toRefs, computed } from 'vue'
 import { useSettingsStore } from '@/store/settings'
 
 const settingsStore = useSettingsStore()
-// 加入注释1234
 const state = reactive({
   zIndex: 3000
 })

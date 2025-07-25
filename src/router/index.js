@@ -169,6 +169,19 @@ export const constantRoutes = [
         meta: { title: '数据包分析', icon: 'network' }
       }
     ]
+  },
+  {
+    path: '/echarts',
+    component: Layout,
+    redirect: '/echarts',
+    children: [
+      {
+        path: 'echarts',
+        component: () => import('@/views/echarts/index.vue'),
+        name: 'echarts',
+        meta: { title: 'Echarts', icon: 'network' }
+      }
+    ]
   }
 ]
 
