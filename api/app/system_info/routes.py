@@ -42,9 +42,19 @@ def get_cpu_info():
     try:
         # 获取每个 CPU 核心的使用率
         cpu_percent = psutil.cpu_percent(interval=1, percpu=True)
-        cpu_info = f'Physical cores: {physical_cores}; Logical cores: {logical_cores}; Max Frequency: {cpu_freq.max} Mhz; Min Frequency: {cpu_freq.min} Mhz; Current Frequency: {cpu_freq.current} Mhz; CPU Usage Per Core: {cpu_percent}; Total CPU Usage: {psutil.cpu_percent(interval=1)}%; '
+        cpu_info = (f'Physical cores: {physical_cores}; '
+                    f'Logical cores: {logical_cores}; '
+                    f'Max Frequency: {cpu_freq.max} Mhz; '
+                    f'Min Frequency: {cpu_freq.min} Mhz; '
+                    f'Current Frequency: {cpu_freq.current} Mhz; '
+                    f'CPU Usage Per Core: {cpu_percent}; '
+                    f'Total CPU Usage: {psutil.cpu_percent(interval=1)}%; ')
     except PermissionError:
-        cpu_info = f'Physical cores: {physical_cores}; Logical cores: {logical_cores}; Max Frequency: {cpu_freq.max} Mhz; Min Frequency: {cpu_freq.min} Mhz; Current Frequency: {cpu_freq.current} Mhz; '
+        cpu_info = (f'Physical cores: {physical_cores}; '
+                    f'Logical cores: {logical_cores}; '
+                    f'Max Frequency: {cpu_freq.max} Mhz; '
+                    f'Min Frequency: {cpu_freq.min} Mhz; '
+                    f'Current Frequency: {cpu_freq.current} Mhz; ')
     return cpu_info
 
 
@@ -63,14 +73,21 @@ def get_disk_info():
             print(f"  Used: {partition_usage.used / (1024 ** 3):.2f} GB")
             print(f"  Free: {partition_usage.free / (1024 ** 3):.2f} GB")
             print(f"  Percentage: {partition_usage.percent}%")
-            disk_info += f'=== Device: {partition.device} ===;\n  Mountpoint: {partition.mountpoint};   File system type: {partition.fstype};\n   Total Size: {partition_usage.total / (1024 ** 3):.2f} GB;   Used: {partition_usage.used / (1024 ** 3):.2f} GB;   Free: {partition_usage.free / (1024 ** 3):.2f} GB;   Percentage: {partition_usage.percent}%;\n '
+            disk_info += (f'=== Device: {partition.device} ===;\n  '
+                          f'Mountpoint: {partition.mountpoint};   '
+                          f'File system type: {partition.fstype};\n   '
+                          f'Total Size: {partition_usage.total / (1024 ** 3):.2f} GB;   '
+                          f'Used: {partition_usage.used / (1024 ** 3):.2f} GB;   '
+                          f'Free: {partition_usage.free / (1024 ** 3):.2f} GB;   '
+                          f'Percentage: {partition_usage.percent}%;\n ')
         except PermissionError as e:
             pass
     # 获取所有磁盘的总I/O统计信息
     disk_io = psutil.disk_io_counters()
     print(f"Total read: {disk_io.read_bytes / (1024 ** 3):.2f} GB")
     print(f"Total write: {disk_io.write_bytes / (1024 ** 3):.2f} GB")
-    disk_info += f'Total read: {disk_io.read_bytes / (1024 ** 3):.2f} GB;\n Total write: {disk_io.write_bytes / (1024 ** 3):.2f} GB\n'
+    disk_info += (f'Total read: {disk_io.read_bytes / (1024 ** 3):.2f} GB;\n '
+                  f'Total write: {disk_io.write_bytes / (1024 ** 3):.2f} GB\n')
     return disk_info
 
 
@@ -310,7 +327,9 @@ def restart_script():
     print(f'当前进程ID: {proj_pid}')
     # os.chdir(current_dir)
     try:
-        subprocess.Popen(['python', os.path.abspath("../new_create_process.py")], stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # 调用新的进程启动脚本
+        subprocess.Popen(['python', os.path.abspath("../new_create_process.py")],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE)  # 调用新的进程启动脚本
     except Exception as e:
         pass
         # qw_bot = QiYeWeChatBot()
@@ -347,7 +366,19 @@ def get_system_info():  # 获取系统的数据
         wan_ip = [i for i in ip_info.split('\n') if 'IP' in i][0].split(':')[1].strip()
         latitude, longitude = get_position(wan_ip)
     # location = get_location(latitude, longitude)
-    value = {'searchResults': {'os_type': os_type, 'cpu_info': cpu_info, 'disk_info': disk_info, 'local_ip': local_ip, 'wan_ip': wan_ip, 'latitude': latitude, 'longitude': longitude, 'ip_info': ip_info}}  # , 'location': location
+    value = {
+        'searchResults':
+            {
+                'os_type': os_type,
+                'cpu_info': cpu_info,
+                'disk_info': disk_info,
+                'local_ip': local_ip,
+                'wan_ip': wan_ip,
+                'latitude': latitude,
+                'longitude': longitude,
+                'ip_info': ip_info
+            }
+    }  # , 'location': location
     # print(value)
     return response_with(resp.SUCCESS_200, value=value)
 
@@ -360,10 +391,11 @@ def get_lan_info():  # 获取LAN的 host 信息
         ip_range = get_network_range(server_ip)
         os_type = get_os_type()
         if os_type == 'MacOS':
-            # os.chdir(current_dir)
             print(f'get_lan_info - {current_dir}')
             ret_info = get_local_network_ip_mac(server_ip)
-            value = {'searchResults': [{'deviceName': '设备' + str(ret_info.index(i) + 1), 'ip': i['ip'], 'mac': i['mac']} for i in ret_info]}
+            value = {'searchResults': [{'deviceName': '设备' + str(ret_info.index(i) + 1),
+                                        'ip': i['ip'],
+                                        'mac': i['mac']} for i in ret_info]}
         elif os_type == 'Android':
             nm = nmap.PortScanner()  # 上面的代码做备用
             result = nm.scan(hosts=ip_range, arguments='-sn')
@@ -379,7 +411,12 @@ def get_lan_info():  # 获取LAN的 host 信息
                     print(ret_ip['scan'])
                     hostname = ''
                 new_ret_info.append({'deviceName': hostname, 'ip': _, 'mac': ''})
-            value = {'searchResults': [{'deviceName': '设备' + str(new_ret_info.index(i) + 1) if not i['deviceName'] else i['deviceName'], 'ip': i['ip'], 'mac': i['mac']} for i in new_ret_info]}
+            value = {
+                'searchResults': [{
+                    'deviceName': '设备' + str(new_ret_info.index(i) + 1) if not i['deviceName'] else i['deviceName'],
+                    'ip': i['ip'],
+                    'mac': i['mac']} for i in new_ret_info]
+            }
         return response_with(resp.SUCCESS_200, value=value)
     except Exception as e:
         value = {'searchResults': os.path.abspath('')}

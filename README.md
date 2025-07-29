@@ -1,8 +1,10 @@
 <p align="center">
-  <strong>vue3-admin-template</strong>
+  <strong>fastapi-vue3-admin-template</strong>
 </p>
 
 <p align="center">
+    <img src="https://img.shields.io/badge/python-3.10.0-brightgreen.svg" >
+    <img src="https://img.shields.io/badge/fastapi-0.115.4-brightgreen.svg" >
     <img src="https://img.shields.io/badge/vue-3.3.4-brightgreen.svg" >
     <img src="https://img.shields.io/badge/element--plus-2.3.12-brightgreen.svg" >
     <img src="https://img.shields.io/badge/vue--router-4.2.4-brightgreen.svg" >
@@ -12,7 +14,7 @@
 
 # 介绍
 
-[vue3-admin-template](https://github.com/zhihuifanqiechaodan/vue3-admin-template.git)  是一个后台前端解决方案，它基于  [vue](https://github.com/vuejs/vue)  和  [element-plus](https://github.com/element-plus/element-plus.git)实现。它使用了最新的前端技术栈，内置了动态路由，权限验证，提供了多种布局方式，它可以帮助你快速搭建企业级中后台产品原型。相信不管你的需求是什么，本项目都能帮助到你。
+[fastapi-vue3-admin-template](https://github.com/zhihuifanqiechaodan/vue3-admin-template.git)  是一个前后台全栈解决方案，它基于  [vue3](https://github.com/vuejs/vue)  和  [element-plus](https://github.com/element-plus/element-plus.git)实现。它使用了最新的前端技术栈，内置了动态路由，权限验证，提供了多种布局方式，它可以帮助你快速搭建企业级中后台产品原型。相信不管你的需求是什么，本项目都能帮助到你。
 
 > 建议
 >
@@ -48,7 +50,7 @@
 
 ## 目录结构
 
-本项目已经为你生成了一个完整的开发框架，提供了涵盖中后台开发的各类功能和坑位，下面是整个项目的目录结构。
+本项目已经为你生成了一个完整的 fastapi+vue3 全栈开发框架，提供了涵盖中后台开发的各类功能和坑位，下面是整个项目的目录结构。
 
 ```js
 ├── README.md
@@ -82,16 +84,23 @@
 
 ```js
 # 克隆项目
-git clone https://github.com/zhihuifanqiechaodan/vue3-admin-template.git
+git clone https://github.com/sunbcy/fastapi-vue3-admin-template.git
 
 # 进入项目目录
-cd vue3-admin-template
+cd fastapi-vue3-admin-template
 
-# 安装依赖
+# 安装前端依赖
 yarn install
 
-# 本地开发 启动项目
+# 安装后端依赖
+cd fastapi-vue3-admin-template/api
+pip install -r requirements_xxx.txt(xxx-mac/win/termux)
+
+# 前端本地开发
 yarn dev
+
+# 启动项目
+./mac_start.sh
 ```
 
 > TIP

@@ -44,7 +44,7 @@ class AsyncQuotesBot:
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super().__new__(cls)
-            cls._instance.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=10, ssl=False))
+            cls._instance.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=100, ssl=False))
         return cls._instance
 
     def __init__(self, proxy=check_proxy()):
@@ -53,7 +53,7 @@ class AsyncQuotesBot:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36'
         }
         self.proxy = proxy['http'] if proxy else None
-        self.connector = aiohttp.TCPConnector(limit=10, ssl=False)  # 设置连接池大小
+        self.connector = aiohttp.TCPConnector(limit=100, ssl=False)  # 设置连接池大小
 
     async def fetch(self):
         kwargs = {}
@@ -64,13 +64,13 @@ class AsyncQuotesBot:
         if self.proxy:
             async with self.session.get(self.quote_main_url,
                                         headers=self.quote_main_url_headers,
-                                        timeout=aiohttp.ClientTimeout(total=10),
+                                        timeout=aiohttp.ClientTimeout(total=30),
                                         **kwargs) as response:
                 return await response.text()
         else:
             async with self.session.get(self.quote_main_url,
                                         headers=self.quote_main_url_headers,
-                                        timeout=aiohttp.ClientTimeout(total=10)
+                                        timeout=aiohttp.ClientTimeout(total=30)
                                         ) as response:
                 return await response.text()
 
@@ -101,7 +101,7 @@ class AsyncQuotesBot:
 client = AsyncQuotesBot()
 
 
-@router.get('/')  # 异步版本
+@router.get('/', tags=['azquotes注册接口'])  # 异步版本
 async def get_today_azquote():  # 目前只能获取当天的数据
     quotes_dict = await client.get_today_quote()
     # print(quotes_dict)
