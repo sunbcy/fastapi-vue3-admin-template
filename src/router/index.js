@@ -182,6 +182,20 @@ export const constantRoutes = [
         meta: { title: 'Echarts', icon: 'network' }
       }
     ]
+  },
+  {
+    path: '/webclassification',
+    component: Layout,
+    redirect: '/webclassification',
+    children: [
+      {
+        path: 'webclassification',
+        component: () =>
+          import('@/views/webclassification/ClassifyWebpage.vue'),
+        name: 'webclassification',
+        meta: { title: '网页分类', icon: 'network' }
+      }
+    ]
   }
 ]
 
