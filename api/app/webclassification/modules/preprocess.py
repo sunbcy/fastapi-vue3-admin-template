@@ -109,16 +109,18 @@ def remove_stopwords(tokens, stopwords):
 
 
 # 加载中英文停用词
-with open("stopwords.txt", encoding='utf-8') as f:
-    stopwords = set(f.read().splitlines())
+# with open("stopwords.txt", encoding='utf-8') as f:
+#     stopwords = set(f.read().splitlines())
 
 
 def stem_en(tokens):
     stemmer = PorterStemmer()
     return [stemmer.stem(word) for word in tokens]
 
+
 def select_terms(tokens):
     return [t for t in tokens if len(t) > 1]
+
 
 def preprocess_pipeline(html):
     text = parse_html(html)
@@ -128,5 +130,3 @@ def preprocess_pipeline(html):
     tokens = tokens_en + tokens_zh
     tokens = remove_stopwords(tokens, stopwords)
     return select_terms(tokens)
-
-

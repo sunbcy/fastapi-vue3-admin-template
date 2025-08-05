@@ -7,16 +7,20 @@
 # @E-mail: saintbcy@163.com
 # @Time: 11月 02, 2024 21:56
 # ---
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter
+from fastapi import HTTPException
 from pydantic import BaseModel
-from modules import preprocess, feature_extract, feature_select, classify
+
+from app.webclassification.modules import preprocess, feature_extract, feature_select, classify
+
+router = APIRouter()
 
 
 class ProcessRequest(BaseModel):
     url: str
 
 
-@app.post("/process")
+@router.post("/process")
 async def full_pipeline(request: ProcessRequest):
     try:
         # 1. 网页预处理
