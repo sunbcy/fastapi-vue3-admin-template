@@ -33,7 +33,7 @@ import ClassificationResult from './ClassificationResult.vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
-const url = ref('')
+const url = ref('https://www.baidu.com')
 const loading = ref(false)
 const activeStep = ref(0)
 const stepData = ref({})
