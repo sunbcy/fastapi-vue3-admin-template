@@ -41,51 +41,6 @@ def tokenize_mixed_text(text: str) -> list:
     return eng_tokens + chn_tokens
 
 
-def preprocess_pipeline(html: str) -> list[str]:
-    """预处理流水线"""
-    text = html_parser(html)
-    tokens = tokenize_mixed_text(text)
-    # 停用词过滤（中英文）
-    stops = set(stopwords.words('english')) | set(open('cn_stopwords.txt').read().splitlines())
-    filtered = [word for word in tokens if word.lower() not in stops and len(word) > 1]
-    # 英文词干提取
-    stemmer = PorterStemmer()
-    stemmed = [stemmer.stem(word) if word.isascii() else word for word in filtered]
-    return stemmed
-
-
-# def run(url):
-#     # 1. 获取网页内容
-#     response = requests.get(url)
-#     html = response.text
-#
-#     # 2. HTML解析
-#     soup = BeautifulSoup(html, 'lxml')
-#     for tag in soup(["script", "style", "header", "footer"]):
-#         tag.decompose()
-#     clean_text = '\n'.join(p.get_text().strip() for p in soup.find_all(['p', 'h1', 'h2', 'h3']))
-#
-#     # 3. 中英文分词
-#     chinese_text = re.sub(r'[^\u4e00-\u9fa5]', ' ', clean_text)
-#     english_text = re.sub(r'[^a-zA-Z]', ' ', clean_text)
-#     chn_tokens = jieba.lcut(chinese_text)
-#     eng_tokens = word_tokenize(english_text)
-#
-#     # 4. 停用词过滤
-#     stops = set(stopwords.words('english')) | set(open('cn_stopwords.txt').read().splitlines())
-#     filtered = [word for word in chn_tokens + eng_tokens
-#                 if word.lower() not in stops and len(word) > 1]
-#
-#     # 5. 词干提取
-#     stemmer = PorterStemmer()
-#     stemmed = [stemmer.stem(word) if word.isascii() else word for word in filtered]
-#
-#     return {
-#         "original_html": html[:500] + "...",
-#         "clean_text": clean_text,
-#         "tokens": stemmed
-#     }
-
 def parse_html(html: str):
     soup = BeautifulSoup(html, 'lxml')
     text_parts = [
@@ -122,7 +77,20 @@ def select_terms(tokens):
     return [t for t in tokens if len(t) > 1]
 
 
-def preprocess_pipeline(html):
+def preprocess_pipeline(html: str) -> list[str]:
+    """预处理流水线"""
+    text = html_parser(html)
+    tokens = tokenize_mixed_text(text)
+    # 停用词过滤（中英文）
+    stops = set(stopwords.words('english')) | set(open('cn_stopwords.txt').read().splitlines())
+    filtered = [word for word in tokens if word.lower() not in stops and len(word) > 1]
+    # 英文词干提取
+    stemmer = PorterStemmer()
+    stemmed = [stemmer.stem(word) if word.isascii() else word for word in filtered]
+    return stemmed
+
+
+def preprocess_pipeline_2(html):
     text = parse_html(html)
     tokens_en = tokenize_en(text)
     tokens_en = stem_en(tokens_en)
@@ -130,3 +98,36 @@ def preprocess_pipeline(html):
     tokens = tokens_en + tokens_zh
     tokens = remove_stopwords(tokens, stopwords)
     return select_terms(tokens)
+
+
+def run(url):
+    # 1. 获取网页内容
+    response = requests.get(url)
+    html = response.text
+
+    # 2. HTML解析
+    soup = BeautifulSoup(html, 'lxml')
+    for tag in soup(["script", "style", "header", "footer"]):
+        tag.decompose()
+    clean_text = '\n'.join(p.get_text().strip() for p in soup.find_all(['p', 'h1', 'h2', 'h3']))
+
+    # 3. 中英文分词
+    chinese_text = re.sub(r'[^\u4e00-\u9fa5]', ' ', clean_text)
+    english_text = re.sub(r'[^a-zA-Z]', ' ', clean_text)
+    chn_tokens = jieba.lcut(chinese_text)
+    eng_tokens = word_tokenize(english_text)
+
+    # 4. 停用词过滤
+    stops = set(stopwords.words('english')) | set(open('cn_stopwords.txt').read().splitlines())
+    filtered = [word for word in chn_tokens + eng_tokens
+                if word.lower() not in stops and len(word) > 1]
+
+    # 5. 词干提取
+    stemmer = PorterStemmer()
+    stemmed = [stemmer.stem(word) if word.isascii() else word for word in filtered]
+
+    return {
+        "original_html": html[:500] + "...",
+        "clean_text": clean_text,
+        "tokens": stemmed
+    }

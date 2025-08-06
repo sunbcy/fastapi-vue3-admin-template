@@ -33,3 +33,7 @@ def feature_weighting(docs: list[list[str]]) -> tuple[csr_matrix, dict]:
 def build_tfidf(docs):
     vectorizer = TfidfVectorizer(tokenizer=lambda x: x, preprocessor=lambda x: x, lowercase=False)
     return vectorizer.fit_transform(docs), vectorizer.get_feature_names_out()
+
+
+def run(url):
+    return

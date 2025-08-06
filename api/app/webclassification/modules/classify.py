@@ -43,3 +43,7 @@ def train_model(docs, labels):
     clf.fit(docs, labels)
     # 模型持久化
     joblib.dump(clf, "nb_classifier.joblib")
+
+
+def run(url):
+    return {}

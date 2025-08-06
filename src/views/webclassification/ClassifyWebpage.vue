@@ -50,7 +50,9 @@ const currentComponent = computed(() => components[activeStep.value])
 const startProcessing = async () => {
   loading.value = true
   try {
-    const response = await axios.post('/process', { url: url.value })
+    const response = await axios.post('/api/webclassification/process', {
+      url: url.value
+    })
     stepData.value = response.data
 
     // 模拟流程进度
