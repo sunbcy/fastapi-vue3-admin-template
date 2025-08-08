@@ -14,10 +14,10 @@
       <el-collapse-item
         title="清洗后文本"
         name="text"
-        :disabled="data.clean_text.length > 5000"
+        :disabled="data.preprocess.clean_text.length > 5000"
       >
         <el-scrollbar height="150px">
-          {{ data.clean_text }}
+          {{ data.preprocess.clean_text }}
         </el-scrollbar>
       </el-collapse-item>
 
@@ -25,7 +25,7 @@
       <el-collapse-item title="分词结果" name="tokens">
         <div class="token-container">
           <el-tag
-            v-for="(word, index) in data.tokens"
+            v-for="(word, index) in data.preprocess.tokens"
             :key="index"
             class="token-tag"
             :type="getTagType(word)"
@@ -43,7 +43,7 @@
             </el-popover>
           </el-tag>
         </div>
-        <el-statistic title="总词数" :value="data.tokens.length" />
+        <el-statistic title="总词数" :value="data.preprocess.tokens.length" />
       </el-collapse-item>
     </el-collapse>
   </el-card>
@@ -73,7 +73,7 @@ const props = defineProps({
 
 // 1. HTML净化与高亮
 const purifiedHtml = computed(() => {
-  const clean = DOMPurify.sanitize(props.data.original_html)
+  const clean = DOMPurify.sanitize(props.data.preprocess.original_html)
   return Prism.highlight(clean, Prism.languages.html, 'html')
 })
 
@@ -86,13 +86,13 @@ const getPOS = (word) => {
 
 // 3. 高频词标签类型
 const getTagType = (word) => {
-  const freq = props.data.tokens.filter((w) => w === word).length
+  const freq = props.data.preprocess.tokens.filter((w) => w === word).length
   return freq > 3 ? 'danger' : 'success'
 }
 
 // 4. 复制功能
 const copyHtml = () => {
-  navigator.clipboard.writeText(props.data.original_html)
+  navigator.clipboard.writeText(props.data.preprocess.original_html)
 }
 </script>
 

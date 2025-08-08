@@ -83,7 +83,8 @@ class liepin_searchjob:
             'X-Client-Type': 'web',
             'X-Fscp-Trace-Id': 'e1929537-67e9-497a-9287-862c1af97549'
         }
-        self.mainSearchPcConditionForm = payload  # {'city': '410', 'dq': '410', 'currentPage': 0, 'key': 'python', 'workYearCode': '0'}
+        self.mainSearchPcConditionForm = payload  # {'city': '410', 'dq': '410', 'currentPage': 0, 'key': 'python',
+        # 'workYearCode': '0'}
         self.data = {'mainSearchPcConditionForm': '%s' % self.mainSearchPcConditionForm}
         self.form_data = {'data': self.data}
         self.payload = {"data": {"mainSearchPcConditionForm": payload}}  # {"city": "410", "dq": "410", "currentPage": 0, "pageSize": 40, "key": "小米开发", "suggestTag": "", "workYearCode": "0"}

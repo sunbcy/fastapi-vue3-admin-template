@@ -30,8 +30,9 @@ import PreprocessResults from './PreprocessResults.vue'
 import FeatureExtraction from './FeatureExtraction.vue'
 import FeatureSelection from './FeatureSelection.vue'
 import ClassificationResult from './ClassificationResult.vue'
-import axios from 'axios'
+// import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { get_process_result } from '@/api/webclassification'
 
 const url = ref('https://www.baidu.com')
 const loading = ref(false)
@@ -47,19 +48,24 @@ const components = [
 
 const currentComponent = computed(() => components[activeStep.value])
 
-const startProcessing = async () => {
+const startProcessing = () => {
   loading.value = true
+  const reqData = {
+    url: url.value
+  }
   try {
-    const response = await axios.post('/api/webclassification/process', {
-      url: url.value
-    })
+    const response = get_process_result(reqData)
+    // const response = await axios.post('/api/webclassification/process', {
+    //
+    // })
     stepData.value = response.data
 
     // 模拟流程进度
     const steps = Object.keys(response.data)
     for (let i = 0; i < steps.length; i++) {
       activeStep.value = i
-      await new Promise((resolve) => setTimeout(resolve, 800))
+      console.log(activeStep.value)
+      new Promise((resolve) => setTimeout(resolve, 800))
     }
   } catch (error) {
     ElMessage.error('处理失败: ' + error.message)

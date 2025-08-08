@@ -4,18 +4,19 @@
 # @Author  : sunbcy
 # @File    : preprocess.py
 # @Software: PyCharm
+import re
+
+import jieba
+import nltk
 import requests
 from bs4 import BeautifulSoup
-import jieba
-import re
-import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
-
+from utils import check_proxy
 
 # 初始化资源
-nltk.download('punkt')
+nltk.download('punkt_tab')
 nltk.download('stopwords')
 jieba.initialize()
 
@@ -102,7 +103,12 @@ def preprocess_pipeline_2(html):
 
 def run(url):
     # 1. 获取网页内容
-    response = requests.get(url)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+    }
+    # res = requests.get(url, headers=headers, proxies=check_proxy())
+    response = requests.get(url, headers=headers, proxies=check_proxy())
     html = response.text
 
     # 2. HTML解析
@@ -118,7 +124,7 @@ def run(url):
     eng_tokens = word_tokenize(english_text)
 
     # 4. 停用词过滤
-    stops = set(stopwords.words('english')) | set(open('cn_stopwords.txt').read().splitlines())
+    stops = set(stopwords.words('english'))  # | set(open('cn_stopwords.txt').read().splitlines())
     filtered = [word for word in chn_tokens + eng_tokens
                 if word.lower() not in stops and len(word) > 1]
 
