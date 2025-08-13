@@ -104,11 +104,11 @@ def get_wan_ip():
     except requests.exceptions.ProxyError:
         print('ip not found!--ProxyError')
         return
-    except requests.exceptions.ConnectionError:
-        print('ip not found!--ConnectionError')
-        return
     except requests.exceptions.SSLError:
         print('ip not found!--SSLError')
+        return
+    except requests.exceptions.ConnectionError:
+        print('ip not found!--ConnectionError')
         return
 
 
@@ -132,9 +132,9 @@ def get_position(ips):
             return '', ''
     except requests.exceptions.ProxyError:  # 因为网络问题获取不了数据
         return '', ''
-    except requests.exceptions.ConnectionError:  # 因为网络问题获取不了数据
-        return '', ''
     except requests.exceptions.SSLError:  # 因为网络问题获取不了数据
+        return '', ''
+    except requests.exceptions.ConnectionError:  # 因为网络问题获取不了数据
         return '', ''
 
 
@@ -152,9 +152,11 @@ def get_ip_info(ip=None):
     soup = BeautifulSoup(html.text, 'html.parser')
     # print(str(soup.find_all('pre')[0]))
 
-    print(f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n{re.findall(precnt_mode, str(soup.find_all('pre')[0]), re.S| re.M)[0]}")
+    print(f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+          f"{re.findall(precnt_mode, str(soup.find_all('pre')[0]), re.S| re.M)[0]}")
     # return soup.find_all('pre')
-    return f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n{re.findall(precnt_mode, str(soup.find_all('pre')[0]), re.S| re.M)[0]}"
+    return (f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"{re.findall(precnt_mode, str(soup.find_all('pre')[0]), re.S| re.M)[0]}")
 
 
 # def get_location(lat, lon):  # 要代理外网才能访问
@@ -235,7 +237,10 @@ def find_process_by_port(port):
     if os_type == 'Windows':
         # 使用 netstat 查找监听指定端口的进程
         try:
-            result = subprocess.run(['netstat', '-anp'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(['netstat', '-anp'],
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    text=True)
             if result.returncode == 0:
                 lines = result.stdout.splitlines()
                 for line in lines:
@@ -255,7 +260,10 @@ def find_process_by_port(port):
     elif os_type == 'Linux' or os_type == 'MacOS':
         # 使用 lsof 查找监听指定端口的进程
         try:
-            result = subprocess.run(['lsof', '-i', f':{port}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(['lsof', '-i', f':{port}'],
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    text=True)
             if result.returncode == 0:
                 lines = result.stdout.splitlines()
                 for line in lines[1:]:  # 跳过表头行
@@ -272,7 +280,10 @@ def find_process_by_port(port):
         # 使用 lsof 查找监听指定端口的进程
         try:
             # 找到所有包含 "python" 或 "flask" 的进程，并过滤出包含 ":<port>" 的行
-            result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(['ps', 'aux'],
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    text=True)
             if result.returncode == 0:
                 lines = result.stdout.splitlines()
                 for line in lines:
