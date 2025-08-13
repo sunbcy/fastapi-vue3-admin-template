@@ -45,16 +45,16 @@ class JYGS:
         async with aiohttp.ClientSession() as session:
             if check_proxy():  # 如果是安卓情况下,check_proxy()可能检测不到代理端口故此多个判断.
                 async with session.post('https://app.jiuyangongshe.com/jystock-app/api/v1/action/field',
-                cookies=self.cookies,
-                headers=self.headers,
-                json=json_data,
-                proxy=check_proxy()['http']) as response:
+                                        cookies=self.cookies,
+                                        headers=self.headers,
+                                        json=json_data,
+                                        proxy=check_proxy()['http']) as response:
                     response_json = await response.json()
             else:
                 async with session.post('https://app.jiuyangongshe.com/jystock-app/api/v1/action/field',
-                cookies=self.cookies,
-                headers=self.headers,
-                json=json_data) as response:
+                                        cookies=self.cookies,
+                                        headers=self.headers,
+                                        json=json_data) as response:
                     response_json = await response.json()
         if response_json.get('errCode') != '1':  # 2024.11.05发现登录失效了,已经开始加了用户cookie检测
             if not len(response_json.get('data')[1:]):
@@ -70,10 +70,13 @@ class JYGS:
         print(f'正在获取 <{time_str}> 的数据')
         async with aiohttp.ClientSession() as session:
             if check_proxy():  # 如果是安卓情况下,check_proxy()可能检测不到代理端口故此多个判断.
-                async with session.get(f'https://www.jiuyangongshe.com/action/{time_str}', headers=self.headers, proxy=check_proxy()['http']) as response:
+                async with session.get(f'https://www.jiuyangongshe.com/action/{time_str}',
+                                       headers=self.headers,
+                                       proxy=check_proxy()['http']) as response:
                     response_text = await response.text()
             else:
-                async with session.get(f'https://www.jiuyangongshe.com/action/{time_str}', headers=self.headers) as response:
+                async with session.get(f'https://www.jiuyangongshe.com/action/{time_str}',
+                                       headers=self.headers) as response:
                     response_text = await response.text()
         # response = requests.get(f'https://www.jiuyangongshe.com/action/{time_str}', headers=self.headers, proxies=check_proxy())
         # response.encoding = response.apparent_encoding
