@@ -1,5 +1,5 @@
 export default {
-  title: 'vue3-admin-template',
+  title: 'fastapi-vue3-admin-template',
   menuPage: {
     table: {
       name: 'Name',
