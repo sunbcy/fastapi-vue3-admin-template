@@ -30,11 +30,11 @@ class JobReq(BaseModel):
     workYearCode: int
 
 
-class liepin_searchjob:
+class LiepinSearchJob:
     """猎聘网搜索职位接口-- from web
     """
     def __init__(self, payload):
-        super(liepin_searchjob, self).__init__()
+        super(LiepinSearchJob, self).__init__()
         self.url = 'https://api-c.liepin.com/api/com.liepin.searchfront4c.pc-search-job'  # %E5%B5%8C%E5%85%A5%E5%BC%8F
         self.X_Fscp_Std_Info = {"client_id": "40108"}
         self.cookies = {
@@ -64,7 +64,6 @@ class liepin_searchjob:
             'lt_auth': '7uwDa3EDxgj67XiI2Gpe46cbjImpA2TK8y8FhU0H1tXuDaLr4PvrQQqFqrEAxAMhxBp9ccULNrL4Pez5yXdL6UAUwGmglICxv%2F6k034HUeVsJ8W2vezHg%2FXUQp4hk0AA8nJbpEIL%2BVzO',
             'access_system': 'C',
             'acw_tc': '1a0c638417268470430241930e00455665002370612273c817cf13b86ecdd5',
-            'inited_user': '01316af02afca9c8e3fe318c5931025c',
             'Hm_lpvt_a2647413544f5a04f00da7eee0d5e200': '1726848033',
             '_ga_54YTJKWN86': 'GS1.1.1726843970.34.1.1726848032.0.0.0',
             'fe_im_connectJson_0': '%7B%220_418ec1ca83a46a561a667e00ad0d9493%22%3A%7B%22socketConnect%22%3A%221%22%2C%22connectDomain%22%3A%22liepin.com%22%7D%7D',
@@ -87,7 +86,8 @@ class liepin_searchjob:
         # 'workYearCode': '0'}
         self.data = {'mainSearchPcConditionForm': '%s' % self.mainSearchPcConditionForm}
         self.form_data = {'data': self.data}
-        self.payload = {"data": {"mainSearchPcConditionForm": payload}}  # {"city": "410", "dq": "410", "currentPage": 0, "pageSize": 40, "key": "小米开发", "suggestTag": "", "workYearCode": "0"}
+        self.payload = {"data": {"mainSearchPcConditionForm": payload}}
+        # {"city": "410", "dq": "410", "currentPage": 0, "pageSize": 40, "key": "小米开发", "suggestTag": "", "workYearCode": "0"}
         self.proxy = {
             'http': 'http://127.0.0.1:7890',
             'https': 'http://127.0.0.1:7890'
@@ -98,43 +98,59 @@ class liepin_searchjob:
         print(f"当前访问第 {self.payload['data']['mainSearchPcConditionForm']['currentPage'] + 1} 页")
         async with aiohttp.ClientSession() as session:
             if check_proxy():  # 如果是安卓情况下,check_proxy()可能检测不到代理端口故此多个判断.
-                async with session.post(self.url, headers=self.headers, cookies=self.cookies, json=self.payload, proxy=check_proxy()['http']) as response:
+                async with session.post(self.url,
+                                        headers=self.headers,
+                                        cookies=self.cookies,
+                                        json=self.payload,
+                                        proxy=check_proxy()['http']) as response:
                     r_text = await response.text()
             else:
-                async with session.post(self.url, headers=self.headers, cookies=self.cookies, json=self.payload) as response:
+                async with session.post(self.url,
+                                        headers=self.headers,
+                                        cookies=self.cookies,
+                                        json=self.payload) as response:
                     r_text = await response.text()
         # print(f'状态码: <{r.status_code}>')
         result_ret = json.loads(r_text)  # r.text  #
         print(result_ret)
         pagination = result_ret['data']['pagination']
-        currentPage = pagination['currentPage']
-        totalPage = pagination['totalPage']
+        current_page = pagination['currentPage']
+        total_page = pagination['totalPage']
         # hasNext = pagination['hasNext'] # 此参数无用
-        while currentPage < totalPage:
+        while current_page < total_page:
             self.payload['data']['mainSearchPcConditionForm']['currentPage'] += 1
             print(f"当前访问第 {self.payload['data']['mainSearchPcConditionForm']['currentPage'] + 1} 页")
             async with aiohttp.ClientSession() as session:
                 if check_proxy():  # 如果是安卓情况下,check_proxy()可能检测不到代理端口故此多个判断.
-                    async with session.post(self.url, headers=self.headers, cookies=self.cookies, json=self.payload, proxy=check_proxy()['http']) as response:
+                    async with session.post(self.url,
+                                            headers=self.headers,
+                                            cookies=self.cookies,
+                                            json=self.payload,
+                                            proxy=check_proxy()['http']) as response:
                         r_text = await response.text()
                 else:
-                    async with session.post(self.url, headers=self.headers, cookies=self.cookies, json=self.payload) as response:
+                    async with session.post(self.url,
+                                            headers=self.headers,
+                                            cookies=self.cookies,
+                                            json=self.payload) as response:
                         r_text = await response.text()
             # print(f'状态码: <{r.status_code}>')
             result_next = json.loads(r_text)
             print(result_next)
-            result_ret['data']['data']['jobCardList'] += (result_next['data']['data']['jobCardList'] if 'jobCardList' in result_next['data']['data'] else [])
+            result_ret['data']['data']['jobCardList'] += (result_next['data']['data']['jobCardList'] if
+                                                          'jobCardList' in result_next['data']['data'] else
+                                                          [])
             pagination = result_next['data']['pagination']
-            currentPage = pagination['currentPage']
-            totalPage = pagination['totalPage']
+            current_page = pagination['currentPage']
+            total_page = pagination['totalPage']
         jobs = []
         try:
-            jobCardList = result_ret['data']['data']['jobCardList']
-            for i in jobCardList:
+            job_card_list = result_ret['data']['data']['jobCardList']
+            for i in job_card_list:
                 job = i['job']
                 recruiter = i['recruiter']
                 comp = i['comp']
-                jobCnt = {
+                job_cnt = {
                     'dataInfo': i['dataInfo'],
                     'dataParams': str(i['dataParams']),
                     'job_title': job['title'],
@@ -260,7 +276,7 @@ class liepin_searchjob:
         except IndexError as e:
             company_intro = html.xpath(
                 '//main//content//section[@class="company-intro-container"]//div[@class="inner ellipsis-3"]/text()')
-            if (not company_intro):
+            if not company_intro:
                 company_intro = ''
         # print(f"company_intro为{company_intro}")
 
@@ -283,10 +299,22 @@ class liepin_searchjob:
                 '//main//aside//div[@class="company-info-container"]//div[@class="register-info"]//span[@class="text"]')[1].text
             company_register_include = html.xpath(
                 '//main//aside//div[@class="company-info-container"]//div[@class="register-info"]//span[@class="text"]')[2].text
-            company_info = f'公司信息:\n公司Logo: {company_logo}\n公司名字: {company_name}\n企业行业: {company_industry}\n融资阶段: {company_stage}\n人数规模: {company_scale}\n职位地址: {company_addr}\n注册时间: {company_register_time}\n注册资本: {company_register_money}\n经营范围: {company_register_include}\n'
+            company_info = (f'公司信息:\n'
+                            f'公司Logo: {company_logo}\n'
+                            f'公司名字: {company_name}\n'
+                            f'企业行业: {company_industry}\n'
+                            f'融资阶段: {company_stage}\n'
+                            f'人数规模: {company_scale}\n'
+                            f'职位地址: {company_addr}\n'
+                            f'注册时间: {company_register_time}\n'
+                            f'注册资本: {company_register_money}\n'
+                            f'经营范围: {company_register_include}\n')
         except Exception as e:
             company_info = ''
-        job_detail = {'job_tags': job_tags, 'job_intro_content': job_intro_content, 'company_intro': company_intro, 'company_info': company_info}
+        job_detail = {'job_tags': job_tags,
+                      'job_intro_content': job_intro_content,
+                      'company_intro': company_intro,
+                      'company_info': company_info}
         print(job_detail)
         return job_detail
 
@@ -296,7 +324,7 @@ async def get_jobs_from_liepinsearch(job_req: JobReq):
     """
     根据前端筛选条件获取职位
     """
-    liepin_job_res = liepin_searchjob(payload=job_req.dict())
+    liepin_job_res = LiepinSearchJob(payload=job_req.dict())
     liepin_job_res = await liepin_job_res.get_liepin_searchjobs()  # liepin API返回的职位
     try:
         value = {'searchResults': [{'id': liepin_job_res.index(j) + 1,
@@ -318,50 +346,55 @@ async def get_jobs_from_liepinsearch(job_req: JobReq):
 
 
 @router.post('/getJobDetails')
-async def getJobDetails(jobDetail: JobDetail):
+async def getJobDetails(job_detail: JobDetail):
     """根据job URL 返回 job detail
     """
-    jobUrl = jobDetail.payload.get('jobUrl')  # 前端请求的参数
-    liepin_job_res = liepin_searchjob(payload=jobDetail.payload)
-    jobDetailResult = await liepin_job_res.get_job_detail_infos(jobUrl)
+    job_url = job_detail.payload.get('jobUrl')  # 前端请求的参数
+    liepin_job_res = LiepinSearchJob(payload=job_detail.payload)
+    job_detail_result = await liepin_job_res.get_job_detail_infos(job_url)
     try:
-        value = {'searchResults': jobDetailResult}
+        value = {'searchResults': job_detail_result}
         return response_with(resp.SUCCESS_200, value=value)
     except Exception as e:
         value = {'searchResults': {}}
         return response_with(resp.NOT_FOUND_HANDLER_404, value=value)
 
 
-@router.get('/get_job_num')
-def get_job_num():
-    try:
-        jobrecommend_oper = jobRecommendationScheme()
-        jobNum = jobrecommend_oper.queryJobNum()
-        value = {'searchResults': str(jobNum)}
-    except Exception as e:
-        value = {'searchResults': 0}
-    return response_with(resp.SUCCESS_200, value=value)
+# @router.get('/get_job_num')
+# def get_job_num():
+#     try:
+#         jobrecommend_oper = jobRecommendationScheme()
+#         job_num = jobrecommend_oper.queryJobNum()
+#         value = {'searchResults': str(job_num)}
+#     except Exception as e:
+#         value = {'searchResults': 0}
+#     return response_with(resp.SUCCESS_200, value=value)
 
 
-@router.get('/get_comp_num')
-def get_comp_num():
-    try:
-        jobrecommend_oper = jobRecommendationScheme()
-        compNum = jobrecommend_oper.query_distinct_column_count('compName')  # 根据此列名筛选出了公司数目
-        value = {'searchResults': str(compNum)}
-    except Exception as e:
-        value = {'searchResults': 0}
-    return response_with(resp.SUCCESS_200, value=value)
+# @router.get('/get_comp_num')
+# def get_comp_num():
+#     try:
+#         jobrecommend_oper = jobRecommendationScheme()
+#         compNum = jobrecommend_oper.query_distinct_column_count('compName')  # 根据此列名筛选出了公司数目
+#         value = {'searchResults': str(compNum)}
+#     except Exception as e:
+#         value = {'searchResults': 0}
+#     return response_with(resp.SUCCESS_200, value=value)
 
 
 @router.get('/get_top_ten_industries')
 def get_top_ten_industries():
-    top_ten_industries_saved = [{'value': 584, 'name': '互联网'}, {'value': 535, 'name': '计算机软件'},
-                          {'value': 268, 'name': '电子商务'}, {'value': 171, 'name': '电子/半导体/集成电路'},
-                          {'value': 151, 'name': '通信设备'}, {'value': 133, 'name': 'IT服务'},
-                          {'value': 122, 'name': '批发/零售'}, {'value': 111, 'name': '贸易/进出口'},
-                          {'value': 106, 'name': '专业技术服务'}, {'value': 97, 'name': '机械/设备'}]
-    if get_os_type() in ['Windows', 'MacOS']:
+    top_ten_industries_saved = ({'value': 584, 'name': '互联网'},
+                                {'value': 535, 'name': '计算机软件'},
+                                {'value': 268, 'name': '电子商务'},
+                                {'value': 171, 'name': '电子/半导体/集成电路'},
+                                {'value': 151, 'name': '通信设备'},
+                                {'value': 133, 'name': 'IT服务'},
+                                {'value': 122, 'name': '批发/零售'},
+                                {'value': 111, 'name': '贸易/进出口'},
+                                {'value': 106, 'name': '专业技术服务'},
+                                {'value': 97, 'name': '机械/设备'})
+    if get_os_type() in ('Windows', 'MacOS'):
         try:
             jobrecommend_oper = jobRecommendationScheme()
             top_ten_industries = jobrecommend_oper.get_top_ten_industries()
