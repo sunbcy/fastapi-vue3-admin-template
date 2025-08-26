@@ -7,19 +7,26 @@
 # @E-mail: saintbcy@163.com
 # @Time: 7月 15, 2025 01:50
 # ---
+import asyncio
 from traceback import print_exc
 
 import aiohttp
-import asyncio
-import uvloop
 from fastapi import APIRouter
 from lxml import etree
 from utils import check_proxy
+from utils import get_os_type
 from utils import responses as resp
 from utils.responses import response_with
 
-# 使用 uvloop 作为事件循环
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+os_type = get_os_type()
+if os_type == 'MacOS':
+    # 使用 uvloop 作为事件循环
+    import uvloop
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if os_type == 'Windows':
+    pass
+if os_type == 'Android':
+    pass
 router = APIRouter()
 
 

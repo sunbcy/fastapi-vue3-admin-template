@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
     print('--项目初始化完成--')
 
-    print("即将进行 python虚拟环境初始化 , 请自行确认本地有>=python3.6以上的环境!")
+    print("即将进行 python虚拟环境初始化 , 请自行确认本地有>=python3.10以上的环境!")
     if os_type == 'Android':  # python虚拟环境初始化
         venv_nm = 'venv_termux'
         if venv_nm not in os.listdir(os.path.abspath('api')):

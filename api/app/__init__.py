@@ -8,9 +8,7 @@ from fastapi.templating import Jinja2Templates
 
 
 def create_app():
-    app = FastAPI(title='fastapi-vue3-admin',
-                  description='fastapi-vue3框架后端',
-                  version='0.1.0')
+    app = FastAPI()
     app.mount("/assets", StaticFiles(directory="../dist/assets", html=True), name="assets")
     templates = Jinja2Templates(directory="../dist")
     # 注册插件
@@ -49,5 +47,5 @@ def register_routers(app):  # 只有在此处注册的应用才可以自动生�
     # from app.qiyewechat import routes as qiyewechat_routes
     # app.include_router(qiyewechat_routes.router, prefix='/api/qiyewechat', tags=['qiyewechat'])
 
-    from app.webclassification import routes as webclassification_routes
-    app.include_router(webclassification_routes.router, prefix='/api/webclassification', tags=['webclassification'])
+    # from app.webclassification import routes as webclassification_routes
+    # app.include_router(webclassification_routes.router, prefix='/api/webclassification', tags=['webclassification'])
