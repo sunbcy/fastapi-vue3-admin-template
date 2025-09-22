@@ -25,6 +25,8 @@ dist-ssr
 
 # api
 venv_mac*
+*.venv*
+api/venv_*
 /api/CodeRepo/
 /api/uploads/
 vite.config.js
