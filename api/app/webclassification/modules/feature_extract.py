@@ -12,7 +12,7 @@ from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # 预训练向量化器路径（需提前训练保存）
-VECTORIZER_PATH = Path(__file__).parent / "tfidf_vectorizer.pkl"
+VECTORIZER_PATH = Path(__file__).parent / "tfidf_vectorizer.pkl"  # 移动端需要保存下这个pkl文件
 
 
 # def feature_weighting(docs: list[list[str]]) -> tuple[csr_matrix, dict]:
