@@ -29,7 +29,9 @@ venv_mac*
 api/venv_*
 /api/CodeRepo/
 /api/uploads/
-vite.config.js
+# vite.config.js 已纳入版本管理(代理目标使用 127.0.0.1,通用无需本地化)
+# 如需本地个性化代理,请复制为 vite.config.local.js 并在其中覆盖(该文件已被忽略)
+vite.config.local.js
 config.yaml
 # Python 字节码缓存文件
 __pycache__/
