@@ -99,7 +99,11 @@ def get_wan_ip():
             response = requests.get(ip_api_url, proxies=check_proxy())
         else:
             response = requests.get(ip_api_url)
-        ip = response.json()['ip']
+        data = response.json()
+        ip = data.get('ip') if isinstance(data, dict) else None
+        if not ip:
+            print('ip not found!--响应中无 ip 字段')
+            return
         return ip
     except requests.exceptions.ProxyError:
         print('ip not found!--ProxyError')
@@ -109,6 +113,9 @@ def get_wan_ip():
         return
     except requests.exceptions.ConnectionError:
         print('ip not found!--ConnectionError')
+        return
+    except (ValueError, KeyError, IndexError):
+        print('ip not found!--响应解析失败')
         return
 
 
@@ -150,13 +157,15 @@ def get_ip_info(ip=None):
     html.encoding = html.apparent_encoding
     # print(html.text)
     soup = BeautifulSoup(html.text, 'html.parser')
-    # print(str(soup.find_all('pre')[0]))
+    pres = soup.find_all('pre')
+    if not pres:
+        return f"{time.strftime('%Y-%m-%d %H:%M:%S')}\nIP: 解析失败(cip.cc 无返回)"
+    content = re.findall(precnt_mode, str(pres[0]), re.S | re.M)
+    if not content:
+        return f"{time.strftime('%Y-%m-%d %H:%M:%S')}\nIP: 解析失败(cip.cc 格式变化)"
 
-    print(f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-          f"{re.findall(precnt_mode, str(soup.find_all('pre')[0]), re.S| re.M)[0]}")
-    # return soup.find_all('pre')
-    return (f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-            f"{re.findall(precnt_mode, str(soup.find_all('pre')[0]), re.S| re.M)[0]}")
+    print(f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n{content[0]}")
+    return (f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n{content[0]}")
 
 
 # def get_location(lat, lon):  # 要代理外网才能访问
@@ -186,19 +195,14 @@ def get_local_network_ip_mac(server_ip):
         print("Error: 未设置环境变量 SUDO_PASSWORD，无法执行需要 root 权限的局域网扫描")
         return
 
-    # 使用 sudo -S 并传递密码
-    process = subprocess.Popen(
-        ['echo', password],
-        stdout=subprocess.PIPE
-    )
+    # 使用 sudo -S 并直接通过 stdin 传递密码，避免密码出现在进程列表中
     sudo_process = subprocess.Popen(
         ['sudo', '-S'] + command,
-        stdin=process.stdout,
+        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
-    process.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
-    output, error = sudo_process.communicate()
+    output, error = sudo_process.communicate(input=password.encode('utf-8'))
 
     if sudo_process.returncode != 0:
         print(f"Error: {error.decode('utf-8').strip()}")
@@ -339,7 +343,7 @@ def restart_script():
     print(f'restart_script - {current_dir}')
     # os.chdir(REPO_PATH)  # 到了项目根目录
     print(f'restart_script 切换后 - {os.path.abspath("")}')
-    proj_pid = find_process_by_port('5000')
+    proj_pid = find_process_by_port('5055')
     print(f'当前进程ID: {proj_pid}')
     # os.chdir(current_dir)
     try:
@@ -379,8 +383,12 @@ def get_system_info():  # 获取系统的数据
         except Exception:
             ip_info = ''
             print('get_ip_info()不可用🚫,请排查!!!')
-        wan_ip = [i for i in ip_info.split('\n') if 'IP' in i][0].split(':')[1].strip()
-        latitude, longitude = get_position(wan_ip)
+        ip_lines = [i for i in ip_info.split('\n') if 'IP' in i]
+        if ip_lines:
+            wan_ip = ip_lines[0].split(':')[1].strip()
+            latitude, longitude = get_position(wan_ip)
+        else:
+            latitude, longitude = '', ''
     # location = get_location(latitude, longitude)
     value = {
         'searchResults':

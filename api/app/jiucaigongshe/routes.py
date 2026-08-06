@@ -1,5 +1,6 @@
 # from app.jiucaigongshe.schema import blockSearchScheme
 import datetime
+import os
 import re
 import time
 import execjs
@@ -7,6 +8,7 @@ import execjs
 import aiohttp
 from fastapi import APIRouter
 from utils import check_proxy
+from utils import load_server_config
 from utils import responses as resp
 from utils.responses import response_with
 
@@ -14,18 +16,41 @@ today = time.strftime('%Y-%m-%d')  # 当天日期
 yesterday = str(datetime.date.today() - datetime.timedelta(days=1))  # 昨日日期
 router = APIRouter()
 
+# api_js 目录相对于本文件所在目录，避免依赖当前工作目录
+_API_JS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'api_js')
+
+
+def _load_jygs_cookies() -> dict:
+    """从 config.yaml 读取韭研公社登录态 cookie。
+
+    支持 'a=1; b=2' 字符串或 yaml 字典两种写法。
+    """
+    raw = load_server_config().get('cookies', '')
+    if not raw:
+        print('警告: 未配置 Jiucaigongshe.cookies，登录后数据可能无法获取，请在 config.yaml 中填写')
+        return {}
+    if isinstance(raw, dict):
+        return {str(k): str(v) for k, v in raw.items()}
+    cookies = {}
+    for pair in str(raw).split(';'):
+        pair = pair.strip()
+        if not pair or '=' not in pair:
+            continue
+        key, _, value = pair.partition('=')
+        cookies[key.strip()] = value.strip()
+    return cookies
+
 
 class JYGS:
     def __init__(self, ) -> None:
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36'
             }
-        self.cookies = {
-            'SESSION': 'Y2Y1MTdjN2YtNmY3Ni00MzJlLWJhN2ItMTIwOWQ1OTljMTgx',
-            'Hm_lvt_58aa18061df7855800f2a1b32d6da7f4': '1730815202',
-            'UM_distinctid': '192fca0141e34d-06f47c9e9ba581-1f525636-4da900-192fca0141fe8d',
-            'Hm_lpvt_58aa18061df7855800f2a1b32d6da7f4': '1730815435',
-        }
+        self.cookies = self._load_cookies()
+
+    @staticmethod
+    def _load_cookies():
+        return _load_jygs_cookies()
 
     async def get_jiuyangongshe_data_by_api(self, time_str: str) -> dict:
         print(f'正在获取 <{time_str}> 的数据')
@@ -37,7 +62,9 @@ class JYGS:
         self.headers['platform'] = '3'
         self.headers['content-type'] = 'application/json;charset=UTF-8'
         self.headers['timestamp'] = current_time
-        self.headers['token'] = execjs.compile(open('api_js/jiuyangongshe_api.js', 'r', encoding='utf-8').read()).call('get_token_by_time', current_time)
+        self.headers['token'] = execjs.compile(
+            open(os.path.join(_API_JS_DIR, 'jiuyangongshe_api.js'), 'r', encoding='utf-8').read()
+        ).call('get_token_by_time', current_time)
         async with aiohttp.ClientSession() as session:
             if check_proxy():  # 如果是安卓情况下,check_proxy()可能检测不到代理端口故此多个判断.
                 async with session.post('https://app.jiuyangongshe.com/jystock-app/api/v1/action/field',

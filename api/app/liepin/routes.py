@@ -11,10 +11,23 @@ from lxml import etree
 from pydantic import BaseModel
 from utils import check_proxy
 from utils import get_os_type
+from utils import load_server_config
 from utils import responses as resp
 from utils.responses import response_with
 
 router = APIRouter()
+
+
+def _parse_cookie_string(cookie_str: str) -> dict:
+    """将 'a=1; b=2' 形式的 cookie 字符串解析为字典。"""
+    cookies = {}
+    for pair in cookie_str.split(';'):
+        pair = pair.strip()
+        if not pair or '=' not in pair:
+            continue
+        key, _, value = pair.partition('=')
+        cookies[key.strip()] = value.strip()
+    return cookies
 
 
 class JobDetail(BaseModel):
@@ -37,41 +50,7 @@ class LiepinSearchJob:
         super(LiepinSearchJob, self).__init__()
         self.url = 'https://api-c.liepin.com/api/com.liepin.searchfront4c.pc-search-job'  # %E5%B5%8C%E5%85%A5%E5%BC%8F
         self.X_Fscp_Std_Info = {"client_id": "40108"}
-        self.cookies = {
-            'inited_user': '01316af02afca9c8e3fe318c5931025c',
-            '_ga': 'GA1.1.1974346437.1709541959',
-            'need_bind_tel': 'false',
-            'new_user': 'false',
-            'c_flag': 'ffb65a1cfb07b7eb657371e4a0339a01',
-            '__uuid': '1725036287314.61',
-            '__gc_id': 'a0e17efbde5340369cd236a869e9aafa',
-            'imId': 'c1affafc1a79ee733ee4dc6efa402073',
-            'imId_0': 'c1affafc1a79ee733ee4dc6efa402073',
-            'imClientId': 'c1affafc1a79ee733f1f8a514ea150a7',
-            'imClientId_0': 'c1affafc1a79ee733f1f8a514ea150a7',
-            'XSRF-TOKEN': 'IbTyT67ZSKix3A-vyCCzjw',
-            'Hm_lvt_a2647413544f5a04f00da7eee0d5e200': '1725036325,1726317142',
-            'HMACCOUNT': 'A9C94FD1A0D780E7',
-            '__tlog': '1726317141989.57%7C00000000%7C00000000%7C00000000%7C00000000',
-            'hpo_role-sec_project': 'sec_project_liepin',
-            'hpo_sec_tenant': '0',
-            'user_roles': '0',
-            'user_photo': '5f8fa3a78dbe6273dcf85e2608u.png',
-            'user_name': '%E5%8D%9E%E6%99%A8%E9%98%B3',
-            'imApp_0': '1',
-            'UniqueKey': '418ec1ca83a46a561a667e00ad0d9493',
-            'liepin_login_valid': '0',
-            'lt_auth': '7uwDa3EDxgj67XiI2Gpe46cbjImpA2TK8y8FhU0H1tXuDaLr4PvrQQqFqrEAxAMhxBp9ccULNrL4Pez5yXdL6UAUwGmglICxv%2F6k034HUeVsJ8W2vezHg%2FXUQp4hk0AA8nJbpEIL%2BVzO',
-            'access_system': 'C',
-            'acw_tc': '1a0c638417268470430241930e00455665002370612273c817cf13b86ecdd5',
-            'Hm_lpvt_a2647413544f5a04f00da7eee0d5e200': '1726848033',
-            '_ga_54YTJKWN86': 'GS1.1.1726843970.34.1.1726848032.0.0.0',
-            'fe_im_connectJson_0': '%7B%220_418ec1ca83a46a561a667e00ad0d9493%22%3A%7B%22socketConnect%22%3A%221%22%2C%22connectDomain%22%3A%22liepin.com%22%7D%7D',
-            'fe_im_opened_pages': '1726323101391_1726848033747_1726848006547',
-            'fe_im_socketSequence_new_0': '8_7_8',
-            '__session_seq': '26',
-            '__tlg_event_seq': '330',
-        }
+        self.cookies = self._load_cookies()
         self.headers = {
             'X-Fscp-Version': '1.1',
             'X-Fscp-Std-Info': json.dumps(self.X_Fscp_Std_Info),
@@ -88,11 +67,22 @@ class LiepinSearchJob:
         self.form_data = {'data': self.data}
         self.payload = {"data": {"mainSearchPcConditionForm": payload}}
         # {"city": "410", "dq": "410", "currentPage": 0, "pageSize": 40, "key": "小米开发", "suggestTag": "", "workYearCode": "0"}
-        self.proxy = {
-            'http': 'http://127.0.0.1:7890',
-            'https': 'http://127.0.0.1:7890'
-        }
-        # self.jobrecommend_oper = jobRecommendationScheme()  # 生成职位推荐对象
+
+    @staticmethod
+    def _load_cookies():
+        """从 config.yaml 读取猎聘登录态 cookie（登录后在浏览器开发者工具复制）。
+
+        支持两种写法：
+          1) cookies: "a=1; b=2"  (浏览器复制的 cookie 字符串)
+          2) cookies: {a: "1", b: "2"}  (yaml 字典)
+        """
+        raw = load_server_config().get('cookies', '')
+        if not raw:
+            print('警告: 未配置 Liepin.cookies，接口将返回 401，请在 config.yaml 中填写登录态 cookie')
+            return {}
+        if isinstance(raw, dict):
+            return {str(k): str(v) for k, v in raw.items()}
+        return _parse_cookie_string(str(raw))
 
     async def get_liepin_searchjobs(self):
         print(f"当前访问第 {self.payload['data']['mainSearchPcConditionForm']['currentPage'] + 1} 页")
