@@ -95,7 +95,7 @@ class JYGS:
         while not (data != '登录失效' and len(data.get('data')[1:])):
             past_n_days_str = str(today_str - datetime.timedelta(days=i))
             try:
-                data = self.get_jiuyangonshe_data_today(past_n_days_str)
+                data = await self.get_jiuyangonshe_data_today(past_n_days_str)
             except Exception:
                 actionFieldList = []
                 return actionFieldList
