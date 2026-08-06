@@ -80,7 +80,7 @@ def get_disk_info():
                           f'Used: {partition_usage.used / (1024 ** 3):.2f} GB;   '
                           f'Free: {partition_usage.free / (1024 ** 3):.2f} GB;   '
                           f'Percentage: {partition_usage.percent}%;\n ')
-        except PermissionError as e:
+        except PermissionError:
             pass
     # 获取所有磁盘的总I/O统计信息
     disk_io = psutil.disk_io_counters()
@@ -179,7 +179,12 @@ def get_local_network_ip_mac(server_ip):
     script_path = os.path.abspath('utils/scan_network.py')
     # 需要root权限的命令
     command = ['sudo', 'nohup', 'python3', script_path, server_ip]
-    password = '0828'  # 替换为你的实际密码
+    # sudo 密码从环境变量读取，避免明文写死在代码里
+    # 运行前请设置: export SUDO_PASSWORD='你的密码'
+    password = os.environ.get('SUDO_PASSWORD')
+    if not password:
+        print("Error: 未设置环境变量 SUDO_PASSWORD，无法执行需要 root 权限的局域网扫描")
+        return
 
     # 使用 sudo -S 并传递密码
     process = subprocess.Popen(
@@ -287,7 +292,7 @@ def find_process_by_port(port):
             if result.returncode == 0:
                 lines = result.stdout.splitlines()
                 for line in lines:
-                    if (f"bash" in line and f"./termux_start.sh" in line) or (f'--port={port}' in line):
+                    if ("bash" in line and "./termux_start.sh" in line) or (f'--port={port}' in line):
                         parts = line.split()
                         pid = int(parts[1])  # PID 是第二列
                         return pid
@@ -341,7 +346,7 @@ def restart_script():
         subprocess.Popen(['python', os.path.abspath("../new_create_process.py")],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)  # 调用新的进程启动脚本
-    except Exception as e:
+    except Exception:
         pass
         # qw_bot = QiYeWeChatBot()
         # qw_bot.send_text(e.output)
@@ -353,7 +358,7 @@ def get_system_info():  # 获取系统的数据
     os_type = get_os_type()
     try:
         cpu_info = get_cpu_info()
-    except Exception as e:
+    except Exception:
         cpu_info = ''
     try:
         disk_info = get_disk_info()
@@ -365,15 +370,15 @@ def get_system_info():  # 获取系统的数据
         latitude, longitude = get_position(wan_ip)
         try:
             ip_info = get_ip_info(wan_ip)
-        except Exception as e:
+        except Exception:
             ip_info = ''
-            print(f'get_ip_info()不可用🚫,请排查!!!')
+            print('get_ip_info()不可用🚫,请排查!!!')
     else:
         try:
             ip_info = get_ip_info()
-        except Exception as e:
+        except Exception:
             ip_info = ''
-            print(f'get_ip_info()不可用🚫,请排查!!!')
+            print('get_ip_info()不可用🚫,请排查!!!')
         wan_ip = [i for i in ip_info.split('\n') if 'IP' in i][0].split(':')[1].strip()
         latitude, longitude = get_position(wan_ip)
     # location = get_location(latitude, longitude)
@@ -411,7 +416,6 @@ def get_lan_info():  # 获取LAN的 host 信息
             nm = nmap.PortScanner()  # 上面的代码做备用
             result = nm.scan(hosts=ip_range, arguments='-sn')
             # print(result)
-            scan_machine = result['scan'].keys()
             ret_info = list(result['scan'].keys())
             new_ret_info = []
             for _ in ret_info:
@@ -429,7 +433,7 @@ def get_lan_info():  # 获取LAN的 host 信息
                     'mac': i['mac']} for i in new_ret_info]
             }
         return response_with(resp.SUCCESS_200, value=value)
-    except Exception as e:
+    except Exception:
         value = {'searchResults': os.path.abspath('')}
         return response_with(resp.SERVER_ERROR_404, value=value)
 
@@ -440,7 +444,7 @@ def update_project():  # 获取LAN的 host 信息
         ret_status = git_pull(REPO_PATH)
         value = {'searchResults': ret_status}
         return response_with(resp.SUCCESS_200, value=value)
-    except Exception as e:
+    except Exception:
         value = {'searchResults': False}
         return response_with(resp.SERVER_ERROR_404, value=value)
 
