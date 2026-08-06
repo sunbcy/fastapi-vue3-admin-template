@@ -69,7 +69,7 @@ SUCCESS_204 = {
 }
 
 
-def response_with(response, value=None, message=None, error=None, headers={}, pagination=None):
+def response_with(response, value=None, message=None, error=None, headers=None, pagination=None):
     result = {}
     if value is not None:
         result.update(value)
@@ -85,6 +85,8 @@ def response_with(response, value=None, message=None, error=None, headers={}, pa
     if pagination is not None:
         result.update({'pagination': pagination})
 
+    if headers is None:
+        headers = {}
     headers.update({'Access-Control-Allow-Origin': '*'})
     headers.update({'server': 'FastAPI REST API'})
     return JSONResponse(result, response['http_code'], headers)

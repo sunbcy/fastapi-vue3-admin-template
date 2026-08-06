@@ -2,14 +2,10 @@
 import datetime
 import re
 import time
-from urllib.parse import urljoin
-
 import execjs
 # import requests
 import aiohttp
-import asyncio
 from fastapi import APIRouter
-from lxml import etree
 from utils import check_proxy
 from utils import responses as resp
 from utils.responses import response_with
@@ -58,7 +54,7 @@ class JYGS:
                     response_json = await response.json()
         if response_json.get('errCode') != '1':  # 2024.11.05发现登录失效了,已经开始加了用户cookie检测
             if not len(response_json.get('data')[1:]):
-                print(f'    当天异动分析数据为空!查询上一个交易日数据分析结果.')
+                print('    当天异动分析数据为空!查询上一个交易日数据分析结果.')
                 return {'data': []}
             else:  # {"msg":"登录失效","data":{},"errCode":"1","serverTime":1730814117}
                 return response_json
@@ -82,11 +78,11 @@ class JYGS:
         # response.encoding = response.apparent_encoding
         try:
             script = re.findall(
-            "<script>window.__NUXT__=([^<]+);</script>", response_text)[0].replace('\\u002F', "/")
+                "<script>window.__NUXT__=([^<]+);</script>", response_text)[0].replace('\\u002F', "/")
             data = execjs.eval(script)  # python调用execjs执行方法
             # print(data)
             if not data.get('data')[0].get('allCount'):
-                print(f'    当天异动分析数据为空!查询上一个交易日数据分析结果.')
+                print('    当天异动分析数据为空!查询上一个交易日数据分析结果.')
             return data
         except IndexError:
             return
@@ -100,7 +96,7 @@ class JYGS:
             past_n_days_str = str(today_str - datetime.timedelta(days=i))
             try:
                 data = self.get_jiuyangonshe_data_today(past_n_days_str)
-            except Exception as e:
+            except Exception:
                 actionFieldList = []
                 return actionFieldList
             i += 1

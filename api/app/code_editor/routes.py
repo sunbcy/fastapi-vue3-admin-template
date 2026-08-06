@@ -31,7 +31,7 @@ class CodeSaveRequest(BaseModel):
 #         with open(save_path, 'w', encoding='utf-8') as f:  # , 'CodeRepo', filename)
 #             f.write(code)
 #         value = {'code': 'success', 'saved_path': save_path}  # success -> 20000 ?
-#     except Exception as e:
+#     except Exception:
 #         value = {'code': 'fail', 'saved_path': save_path}
 #     return response_with(resp.SUCCESS_200, value=value)
 
@@ -54,7 +54,7 @@ async def save_code(request: CodeSaveRequest):  # 目前只能获取当天的数
         print('成功写入code')
         # print(response_with(resp.SUCCESS_200, value=value).body.decode("utf-8"))
         return response_with(resp.SUCCESS_200, value=value)
-    except Exception as e:
+    except Exception:
         value = {'saved_path': save_path}  # 'code': 'fail',
         print('写入失败')
         return response_with(resp.BAD_REQUEST_400, value=value)

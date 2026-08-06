@@ -1,0 +1,11 @@
+[flake8]
+max-line-length = 120
+extend-ignore = E501, W503, E203
+exclude =
+    .git,
+    __pycache__,
+    *.pyc,
+    venv_mac,
+    venv_mac_310,
+    bak,
+    app/liepin/api_test.py
